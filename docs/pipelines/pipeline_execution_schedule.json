@@ -20,15 +20,23 @@
     "frequency": "daily",
     "timer_unit": "kairos-trap-cvm-cad.timer"
   },
-  "b3_enriquecimento_cadastral_ativos": {
-    "schedule": "2026-09-01T22:00:00",
-    "frequency": "once",
-    "timer_unit": "kairos-trap-b3-cad.timer",
-    "note": "Executado uma vez."
-  },
   "cvm_formulario_de_referencia": {
     "schedule": "19:00:00",
     "frequency": "daily",
     "timer_unit": "kairos-trap-cvm-fre.timer"
+  },
+  "b3_enriquecimento_cadastral_ativos": {
+    "schedule": null,
+    "frequency": "manual",
+    "timer_unit": null,
+    "status": "on_demand",
+    "note": "Executado sob demanda pelo stage/pipeline.py."
+  },
+  "b3_indices_segmentos_setoriais": {
+    "schedule": null,
+    "frequency": "manual",
+    "timer_unit": null,
+    "status": "on_demand",
+    "note": "Executado sob demanda pelo stage/pipeline.py."
   }
 }
