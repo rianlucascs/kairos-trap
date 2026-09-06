@@ -15,7 +15,7 @@
 
 ### Visão geral
 
-O kairos-trap coleta e processa dados públicos do mercado financeiro brasileiro — CVM, B3 e outras fontes — através de pipelines de ETL. O projeto reúne interfaces, componentes compartilhados e convenções que orientam extração, transformação, validação e persistência dos dados, mantendo os pipelines independentes entre si para atender diferentes fontes, formatos e regras de negócio.
+O kairos-trap coleta, transforma e organiza dados públicos do mercado financeiro brasileiro, principalmente de CVM e B3, por meio de pipelines de ETL independentes. O projeto fornece infraestrutura compartilhada para extração, transformação, validação, checkpoints, retenção e armazenamento dos dados, além de componentes para análise exploratória, pesquisa financeira e aplicações Streamlit. Cada pipeline possui regras próprias de origem, formato e processamento, mas segue convenções comuns de execução e organização.
 
 ---
 
@@ -47,7 +47,7 @@ A camada de pipelines é responsável pela aquisição, preparação e persistê
 | `cvm_valores_mobiliarios_ofertados` — *dev*             | [CVM](https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/VLMO/DADOS/)                                  | Extração e processamento dos dados de valores mobiliários ofertados.                             |
 | `google_noticias_mercado` — *dev*                       | [Google](https://news.google.com/)                                                           | Extração e processamento de notícias relacionadas ao mercado financeiro.                         |
 | `b3_enriquecimento_cadastral_ativos` | [B3](https://www.b3.com.br/)                                                           | Extração e processamento de informações complementares para enriquecimento cadastral e identificação de ativos financeiros. |
-| `b3_indices_segmentos_setoriais` — *dev*                | [B3](https://www.b3.com.br/pt_br/market-data-e-indices/indices/indices-de-segmentos-e-setoriais/) | Extração e processamento da composição dos índices de segmentos e setoriais.                     |
+| `b3_indices_segmentos_setoriais`               | [B3](https://www.b3.com.br/pt_br/market-data-e-indices/indices/indices-de-segmentos-e-setoriais/) | Extração e processamento da composição dos índices de segmentos e setoriais.                     |
 | `social_monitoramento_agentes_de_mercado` — dev | [Redes sociais]() | Monitoramento e processamento de publicações de agentes de mercado em redes sociais.
 
 ---
@@ -65,8 +65,8 @@ A camada de Research é responsável pelo consumo e utilização dos dados produ
 
 | App | Descrição | Preview |
 |---|---|---|
-| `streamlit_app_pipelines` | Monitoramento operacional dos pipelines ETL, incluindo:<br>• Consulta de pipelines disponíveis<br>• Logs de execução<br>• Checkpoints organizados por pipeline, stage e step | [preview](docs/screenshots/streamlit_apps/streamlit_app_pipelines/page_overview.png) |
-| `streamlit_app_research` | Aplicação analítica para pesquisa de mercado, incluindo:<br>• Monitoramento geral e setorial<br>• Acompanhamento de preços, retornos e balanço<br>• Avaliação de estratégias de investimento<br>• Análise de conjuntos de ativos<br>• Consulta de notícias por ativo<br>• Configuração de alertas | ![preview](caminho/para/imagem.png) |
+| `streamlit_app_pipelines` | Monitoramento operacional dos pipelines ETL, incluindo:<br>• Consulta de pipelines disponíveis<br>• Logs de execução<br>• Checkpoints organizados por pipeline, stage e step | [preview](docs/streamlit_apps/preview/streamlit_app_pipelines/page_overview.png) |
+| `streamlit_app_research` | Aplicação analítica para pesquisa de mercado, incluindo:<br>• Monitoramento geral e setorial<br>• Acompanhamento de preços, retornos e balanço<br>• Avaliação de estratégias de investimento<br>• Análise de conjuntos de ativos<br>• Consulta de notícias por ativo<br>• Configuração de alertas | [preview](docs/streamlit_apps/preview/streamlit_app_research/asset_explorer.pdf) |
 
 ---
 

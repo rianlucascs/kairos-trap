@@ -56,3 +56,11 @@ services:
       - PYTHONUNBUFFERED=1
       - PIPELINE_NAME=b3_enriquecimento_cadastral_ativos
       - PIPELINE_ENV=prod
+
+  b3-indi-seg-set-pipeline:
+    <<: *pipeline-common
+    container_name: b3-indi-seg-set-pipeline
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PIPELINE_NAME=b3_indices_segmentos_setoriais
+      - PIPELINE_ENV=prod
