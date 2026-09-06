@@ -69,10 +69,9 @@ class ExtractorWorkerA(ExtractorWorkersInterface):
     
 
     def get_company_by_cvm_code(self, codigo_cvm: str) -> dict:
-        url_base = getattr(self.settings, "url", "")
         
+        url_base = getattr(self.settings, "url", "")
         if not url_base:
-            
             raise ValueError("URL não configurada.")
 
         payload = {"codeCVM": codigo_cvm, "language": "pt-br"}
