@@ -1,7 +1,7 @@
 
 
-from pipelines.readers.pipelines.b3_enriquecimento_cadastral_ativos.reader_parquet_cvm import ReaderSnapshotParquet as b3_cad
-from pipelines.readers.pipelines.cvm_cias_abertas_informacao_cadastral.reader_parquet_cvm import ReaderSnapshotParquet as cvm_cad
+from pipelines.readers.pipelines.b3_enriquecimento_cadastral_ativos.reader_parquet import ReaderSnapshotParquet as b3_cad
+from pipelines.readers.pipelines.cvm_cias_abertas_informacao_cadastral.reader_parquet import ReaderSnapshotParquet as cvm_cad
 from streamlit_apps.apps.streamlit_app_research.shared.dto.asset_dto import AssetTradingCodeDTO
 
 from pandas import DataFrame
@@ -79,3 +79,6 @@ class AssetRepository:
             )
             for row in data[["code", "codeCVM", "companyName"]].itertuples(index=False)
         ]
+        
+    
+

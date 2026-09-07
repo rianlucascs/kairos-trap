@@ -5,6 +5,7 @@ from streamlit_apps.apps.streamlit_app_research.infrastructure.repositories.asse
 from pandas import DataFrame
 import streamlit as st
 
+
 class AssetPriceService:
     
     

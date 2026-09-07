@@ -28,7 +28,7 @@ div[data-testid="stTab"][aria-selected="true"] {
 }
 
 div[data-testid="stTab"][aria-selected="true"] p {
-    color: #1E1E1E !important;
+    color: black !important;
     font-weight: 700 !important;
 }
 
