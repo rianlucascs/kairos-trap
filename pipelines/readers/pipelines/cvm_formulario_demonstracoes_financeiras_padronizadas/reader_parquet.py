@@ -5,7 +5,7 @@ from pipelines.shared.interfaces.readers.cvm.reader_snapshot_parquet_cvm import 
 from typing import Literal
 
 
-class ReaderSnapshotParquetITR(ReaderSnapshotParquetCVMInterface):
+class ReaderSnapshotParquet(ReaderSnapshotParquetCVMInterface):
     
     
     def __init__(
@@ -17,7 +17,7 @@ class ReaderSnapshotParquetITR(ReaderSnapshotParquetCVMInterface):
     ) -> None:
 
         super().__init__(
-            pipeline="cvm_formulario_informacoes_trimestrais",
-            prefix="itr",
+            pipeline="cvm_formulario_demonstracoes_financeiras_padronizadas",
+            prefix="dfp",
             demonstration_code=demonstration_code,
         )

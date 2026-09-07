@@ -21,7 +21,6 @@ class ReaderSnapshotParquetCVMInterface(ReaderSnapshotParquetInterface):
         
         super().__init__(
             pipeline=pipeline,
-            subdir_stage="to_processed",
             file_identifiers=f"{prefix}_cia_aberta_{demonstration_code}_2011-{date.today().year}.parquet",
             use_latest_snapshot=True
         )
