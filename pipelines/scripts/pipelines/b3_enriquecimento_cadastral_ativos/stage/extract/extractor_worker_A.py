@@ -27,7 +27,7 @@ from pipelines.shared.interfaces.pipelines.stage.extract.extractor_workers impor
 from pipelines.shared.utils.selenium_utils.delays import jittered_delay
 from pipelines.shared.checkpoint_values import Stage, Status, Step, FailurePoint, Severity
 
-from pipelines.readers.pipelines.cvm_cias_abertas_informacao_cadastral.reader_parquet_cvm import ReaderSnapshotParquet
+from pipelines.readers.pipelines.cvm_cias_abertas_informacao_cadastral.reader_parquet import ReaderSnapshotParquet
 
 from time import sleep, monotonic
 import requests
@@ -156,12 +156,12 @@ class ExtractorWorkerA(ExtractorWorkersInterface):
         MAX_RUNTIME_SECONDS = 4 * 60 * 60  # 4 horas
         start_time = monotonic()
             
-        for _, row in cias_cadastrais.iterrows():
+        for _, raw in cias_cadastrais.iterraws():
             
-            if row.SIT != "ATIVO":
+            if raw.SIT != "ATIVO":
                 continue
             
-            filename = f"cd_cvm_{row.CD_CVM}.json"
+            filename = f"cd_cvm_{raw.CD_CVM}.json"
             filepath = raw_json_path / filename
             
             if filepath.exists():
@@ -183,13 +183,13 @@ class ExtractorWorkerA(ExtractorWorkersInterface):
                     extra={
                         "motivo": "tempo máximo de execução excedido",
                         "elapsed_seconds": round(elapsed, 1),
-                        "cd_cvm_restante": row.CD_CVM,
+                        "cd_cvm_restante": raw.CD_CVM,
                     },
                 )
                 
                 self.logger.critical(
                     f"Tempo máximo de execução ({MAX_RUNTIME_SECONDS}s) excedido. "
-                    f"Abortando antes de processar CVM {row.CD_CVM}."
+                    f"Abortando antes de processar CVM {raw.CD_CVM}."
                 )
                 
                 break
@@ -209,7 +209,7 @@ class ExtractorWorkerA(ExtractorWorkersInterface):
                 
                 try:
                     
-                    dados = self.get_company_by_cvm_code(row.CD_CVM)
+                    dados = self.get_company_by_cvm_code(raw.CD_CVM)
                     
                     if not dados or not dados.get("code"):
                         
@@ -217,15 +217,15 @@ class ExtractorWorkerA(ExtractorWorkersInterface):
                             ctx=ctx,
                             stage=Stage.EXTRACT,
                             step=Step.DOWNLOAD,
-                            filename=f"extractor_worker_a.failed_{row.CD_CVM}.json",
+                            filename=f"extractor_worker_a.failed_{raw.CD_CVM}.json",
                             status=Status.FAILED,
                             failure_point=FailurePoint.EMPTY_RESPONSE,
                             severity=Severity.ERROR,
                             source=getattr(self.settings, "url", self.pipeline),
-                            extra={"cd_cvm": row.CD_CVM},
+                            extra={"cd_cvm": raw.CD_CVM},
                         )
                         
-                        self.logger.warning(f"CVM {row.CD_CVM} retornou dados vazios, marcando como falha e seguindo.")
+                        self.logger.warning(f"CVM {raw.CD_CVM} retornou dados vazios, marcando como falha e seguindo.")
                         
                         resolved = True
                         
@@ -244,12 +244,12 @@ class ExtractorWorkerA(ExtractorWorkersInterface):
                             ctx=ctx,
                             stage=Stage.EXTRACT,
                             step=Step.DOWNLOAD,
-                            filename=f"extractor_worker_a.success_{row.CD_CVM}.json",
+                            filename=f"extractor_worker_a.success_{raw.CD_CVM}.json",
                             status=Status.SUCCESSFUL,
                             failure_point=None,
                             severity=Severity.INFO,
                             source=getattr(self.settings, "url", self.pipeline),
-                            extra={"cd_cvm": row.CD_CVM},
+                            extra={"cd_cvm": raw.CD_CVM},
                         )
                         
                         resolved = True
@@ -264,15 +264,15 @@ class ExtractorWorkerA(ExtractorWorkersInterface):
                         ctx=ctx,
                         stage=Stage.EXTRACT,
                         step=Step.DOWNLOAD,
-                        filename=f"extractor_worker_a.failed_{row.CD_CVM}.json",
+                        filename=f"extractor_worker_a.failed_{raw.CD_CVM}.json",
                         status=Status.FAILED,
                         failure_point=FailurePoint.SEARCH_NO_RESULTS,
                         severity=Severity.ERROR,
                         source=getattr(self.settings, "url", self.pipeline),
-                        extra={"cd_cvm": row.CD_CVM},
+                        extra={"cd_cvm": raw.CD_CVM},
                     )
                     
-                    self.logger.warning(f"CVM {row.CD_CVM} não encontrado, marcando como falha e seguindo.")
+                    self.logger.warning(f"CVM {raw.CD_CVM} não encontrado, marcando como falha e seguindo.")
                     
                     resolved = True
                     
@@ -280,7 +280,7 @@ class ExtractorWorkerA(ExtractorWorkersInterface):
                 
                 except B3APIUnavailableError:
                     
-                    self.logger.error(f"B3 API indisponível ao buscar CVM {row.CD_CVM}, tentando novamente.")
+                    self.logger.error(f"B3 API indisponível ao buscar CVM {raw.CD_CVM}, tentando novamente.")
                     
                     sleep(jittered_delay(current_delay, current_delay + 5))
                     current_delay = min(60, current_delay * 2)  # aumenta o delay após erro de indisponibilidade da API
@@ -289,7 +289,7 @@ class ExtractorWorkerA(ExtractorWorkersInterface):
                 
                 except B3APIRateLimitedError:
                     
-                    self.logger.error(f"Rate limit atingido em CVM {row.CD_CVM}, tentando novamente.")
+                    self.logger.error(f"Rate limit atingido em CVM {raw.CD_CVM}, tentando novamente.")
                     
                     sleep(jittered_delay(current_delay, current_delay + 5))
                     current_delay = min(60, current_delay * 2)  # aumenta o delay após atingir rate limit
@@ -302,18 +302,18 @@ class ExtractorWorkerA(ExtractorWorkersInterface):
                     ctx=ctx,
                     stage=Stage.EXTRACT,
                     step=Step.DOWNLOAD,
-                    filename=f"extractor_worker_a.failed_{row.CD_CVM}.json",
+                    filename=f"extractor_worker_a.failed_{raw.CD_CVM}.json",
                     status=Status.FAILED,
                     failure_point=FailurePoint.MAX_RETRIES_EXCEEDED,
                     severity=Severity.ERROR,
                     source=getattr(self.settings, "url", self.pipeline),
                     extra={
-                        "cd_cvm": row.CD_CVM,
+                        "cd_cvm": raw.CD_CVM,
                         "motivo": "esgotou tentativas sem resolver"
                     },
                 )
                 
-                self.logger.error(f"Falha ao buscar CVM {row.CD_CVM} após {max_attempts} tentativas.")
+                self.logger.error(f"Falha ao buscar CVM {raw.CD_CVM} após {max_attempts} tentativas.")
                 
         
         
