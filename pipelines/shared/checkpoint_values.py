@@ -88,7 +88,7 @@ class FailurePoint(str, Enum):
     `DOWNLOAD_BUTTON_NOT_FOUND`, `TRANSFORM_EXCEPTION`, `NETWORK_ERROR`,
     `AUTH_ERROR`, `SCHEMA_ERROR`, `PARSE_ERROR`, `IO_ERROR`, `TIMEOUT_ERROR`,
     `DEPENDENCY_ERROR`, `UNEXPECTED_ERROR`, `UNZIP`, `SEARCH_NO_RESULTS`, 
-    `NO_CADASTRAL_INFO`, `EMPTY_RESPONSE`.
+    `NO_CADASTRAL_INFO`, `EMPTY_RESPONSE`, `PROCESSING_ERROR`.
     """
 
     DRIVER_CREATION = "driver_creation"
@@ -111,6 +111,7 @@ class FailurePoint(str, Enum):
     EMPTY_RESPONSE = "empty_response"
     MAX_RETRIES_EXCEEDED = "max_retries_exceeded"
     RUNTIME_EXCEEDED = "runtime_exceeded"  
+    PROCESSING_ERROR = "processing_error"
     
 
 class ReasonCode(str, Enum):

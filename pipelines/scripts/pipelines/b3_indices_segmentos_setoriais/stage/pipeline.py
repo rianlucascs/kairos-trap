@@ -1,6 +1,6 @@
 
 
-from pipelines.shared.interfaces.pipelines.stage.pipeline_v2 import PipelineBase
+from pipelines.shared.interfaces.pipelines.stage.pipeline import PipelineBase
 
 
 class Pipeline(PipelineBase):

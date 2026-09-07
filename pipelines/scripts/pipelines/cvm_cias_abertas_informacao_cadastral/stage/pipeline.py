@@ -1,6 +1,6 @@
 
 
-from pipelines.shared.interfaces.pipelines.stage.pipeline_v2 import PipelineBase
+from pipelines.shared.interfaces.pipelines.stage.pipeline import PipelineBase
 
 
 class Pipeline(PipelineBase):
@@ -14,7 +14,6 @@ class Pipeline(PipelineBase):
         return {
             "extract.extractor_orchestrator": "ExtractorOrchestrator",
             "transform.to_interim.to_interim_orchestrator": "ToInterimOrchestrator",
-            "transform.to_processed.to_processed_orchestrator": "ToProcessedOrchestrator",
             "compare.comparator_orchestrator": "ComparatorOrchestrator",
             "retention.retention_policy_orchestrator": "RetentionPolicyOrchestrator"
         }

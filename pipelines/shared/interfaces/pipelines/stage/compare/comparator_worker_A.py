@@ -238,17 +238,6 @@ class ComparatorWorkerInterfaceA(ComparatorWorkersInterface, ABC):
         return common_files, only_in_previous, only_in_current
         
     
-    def _build_transform_path(self, ctx: PipelineContext, date_snapshot) -> Path:
-        
-        to_processed_parquet_path = ctx.build_transformed_path(
-            ctx.current_snapshot_path(self.pipeline, date_snapshot),
-            subdir_stage="to_processed", 
-            subdir_format="parquet"
-            )
-        
-        return to_processed_parquet_path
-
-        
     def _worker(self, ctx: PipelineContext) -> None:
         
         prepare_snapshot_drift_path = ctx.prepare_snapshot_drift_path(self.pipeline, subdir=self.current_snapshot)
@@ -280,8 +269,8 @@ class ComparatorWorkerInterfaceA(ComparatorWorkersInterface, ABC):
                 key_cols: list = self._key_cols()
 
                 len_added_rows, len_removed_rows, len_changed_rows = DuckDBManager(self.logger)._find_snapshot_drift_duckdb(
-                    previous_path=self._build_transform_path(ctx, self.previous_snapshot) / filename,
-                    current_path=self._build_transform_path(ctx, self.current_snapshot) / filename,
+                    previous_path=self._build_previous_data_path(ctx) / filename,
+                    current_path=self._build_current_data_path(ctx) / filename,
                     output_dir=filename_folder_path,
                     output_stem=_filename,
                     key_cols=key_cols,

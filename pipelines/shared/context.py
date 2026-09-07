@@ -80,8 +80,12 @@ class PipelineContext:
             return base / subdir_format
         
     
-    def build_transformed_path(self, pipeline: str, subdir_stage: Literal["to_interim", "to_processed"], 
-                               subdir_format: Literal["csv", "html", "text", "zip", "parquet"] | None = None) -> Path:
+    def build_transformed_path(
+        self, 
+        pipeline: str, 
+        subdir_stage: Literal["to_interim", "to_processed"], 
+        subdir_format: str | None = None,  # "csv", "html", "text", "zip", "parquet"
+    ) -> Path:
         """Constrói o caminho para o diretório ``transform`` de um pipeline.
         
         Returns:

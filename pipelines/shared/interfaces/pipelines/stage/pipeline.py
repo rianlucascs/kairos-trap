@@ -1,54 +1,55 @@
 """
-Pipeline base para orquestração de estágios.
+master_orchestrator:
+    Pipeline base para orquestração de estágios.
 
 Responsabilidades:
     Executar o fluxo principal na ordem: ``extract`` -> ``to_interim`` -> ``to_processed`` -> ``load`` -> ``compare`` -> ``retention``.
-    Executar ``compare`` e ``retention`` somente quando implementados pela subclasse.
+    Executar apenas os estágios presentes em ``self._build_stages()``; estágios
+    omitidos pela subclasse (ex: ``compare``, ``retention`` quando não implementados)
+    simplesmente não são executados.
     Centralizar contexto de execução (env, run_id, paths e logging).
+    Importar dinamicamente o módulo orquestrador de cada estágio a partir de
+    ``self._build_stages()`` e instanciar a classe correspondente para executar seu ``main``.
 
 Notas:
-
-    As subclasses devem definir o atributo pipeline e implementar os builders obrigatórios.
-    Compare e retention são opcionais e retornam None por padrão.
+    Estágios cujo módulo ou classe orquestradora não sejam encontrados são
+    registrados como warning e ignorados, sem interromper os demais estágios.
 """
 
 
 from pipelines.shared.context import PipelineContext
-from pipelines.shared.interfaces.pipelines.stage.extract.extractor_orchestrator import ExtractorOrchestratorInterface
-from pipelines.shared.interfaces.pipelines.stage.transform.to_interim.to_interim_orchestrator import ToInterimOrchestratorInterface
-from pipelines.shared.interfaces.pipelines.stage.transform.to_processed.to_processed_orchestrator import ToProcessedOrchestratorInterface
-from pipelines.shared.interfaces.pipelines.stage.load.loader_orchestrator import LoaderOrchestratorInterface
-from pipelines.shared.interfaces.pipelines.stage.compare.comparator_orchestrator import ComparatorOrchestratorInterface
-from pipelines.shared.interfaces.pipelines.stage.retention.retention_policy_orchestrator import RetentionPolicyOrchestratorInterface
 
 from abc import ABC, abstractmethod
+import importlib
 
 
-class PipelineInterface(ABC):
+class PipelineBase(ABC):
     """
-    Interface para pipelines, responsável por orquestrar as etapas de extração, transformação e carga.
-    
-    Fluxo fixo (não sobrescrever):
-        ``run``: ponto de entrada, sempre configura logging e chama os orquestradores na ordem.
-    
-    Métodos que a subclasse deve implementar:
-        ``build_extractor_orchestrator``: define qual orquestrador de extração essa pipeline usa.
-        ``build_to_interim_orchestrator``: define qual orquestrador de to_interim essa pipeline usa.
-    
-    Metodos opcionais que a subclasse pode implementar:
-        ``build_to_processed_orchestrator``: define qual orquestrador de to_processed essa pipeline usa.
-        ``build_comparator_orchestrator``: define qual orquestrador de comparação essa pipeline usa.
-        ``build_retention_policy_orchestrator``: define qual orquestrador de política de retenção essa pipeline usa.
-        ``build_loader_orchestrator``: define qual orquestrador de carga essa pipeline usa.
-        
-    Fluxo do pipeline: 
-        `Extract` → `Transform.ToInterim` → `Transform.ToProcessed` → `Load` → `Compare` → `Retention`
+    Classe base para pipelines orientadas a estágios.
+
+    Implementa o fluxo de execução comum (Template Method): a subclasse só
+    precisa declarar `pipeline` e implementar `_build_stages()`; o método
+    `run()` cuida da importação dinâmica, instanciação e execução de cada
+    estágio, com logging e tratamento de estágio ausente/malformado.
+
+    Atributos:
+
+        pipeline (str): nome da pipeline, usado para resolver o caminho dos
+            módulos de estágio e propagado às classes orquestradoras.
+
+        stages (dict): mapeamento entre nome do estágio e nome da classe
+            orquestradora responsável por executá-lo. Construído por
+            `_build_stages()` a cada chamada de `run()`.
+
+        ctx: contexto de execução compartilhado entre os estágios.
     """
     
     
     pipeline: str # subclasse deve declarar (ex: pipeline = "pipeline_a")
+
+    process: str = "master_orchestrator"    
     
-    
+
     def __init__(
         self,
         env: str = "dev",
@@ -56,57 +57,83 @@ class PipelineInterface(ABC):
     ) -> None:
 
         self.ctx = PipelineContext(env=env, run_id=run_id)
-    
-    
-    @abstractmethod
-    def build_extractor_orchestrator(self) -> ExtractorOrchestratorInterface: ...
-    
-    
-    @abstractmethod
-    def build_to_interim_orchestrator(self) -> ToInterimOrchestratorInterface: ...
-    
-    
-    def build_to_processed_orchestrator(self) -> ToProcessedOrchestratorInterface | None:
-        return None
-    
-    
-    def build_loader_orchestrator(self) -> LoaderOrchestratorInterface | None:
-        return None
- 
+        
 
-    def build_comparator_orchestrator(self) -> ComparatorOrchestratorInterface | None:
-        return None
-    
-    
-    def build_retention_policy_orchestrator(self) -> RetentionPolicyOrchestratorInterface | None:
-        return None
+    def __init_subclass__(cls, **kwargs) -> None:
+        
+        super().__init_subclass__(**kwargs)
+
+        if "pipeline" not in cls.__dict__:
+            raise TypeError(
+                f"{cls.__name__} deve declarar o atributo de classe 'pipeline' "
+                f"(ex: pipeline = \"pipeline_a\")."
+            )
+            
+
+    @abstractmethod
+    def _build_stages(self) -> dict[str, str]:
+        """
+        Retorna um dicionário mapeando os nomes dos estágios para as classes orquestradoras correspondentes.
+
+        Retorno:
+            dict[str, str]: mapeamento entre nome do estágio e nome da classe orquestradora.
+        """
+        # return {
+        #     "extract.extractor_orchestrator": "ExtractorOrchestrator",
+        #     "transform.to_interim.to_interim_orchestrator": "ToInterimOrchestrator",
+        #     "transform.to_processed.to_processed_orchestrator": "ToProcessedOrchestrator",
+        #     "load.loader_orchestrator": "LoaderOrchestrator",
+        #     "compare.comparator_orchestrator": "ComparatorOrchestrator",
+        #     "retention.retention_policy_orchestrator": "RetentionPolicyOrchestrator"
+        # }
+        ...
     
     
     def run(self) -> None:
         """
         Método principal da pipeline, responsável por orquestrar os orquestradores.
+
+        Para cada estágio definido em `self._build_stages()`, importa dinamicamente
+        o módulo correspondente em `pipelines.scripts.pipelines.{pipeline}.stage.{stage}`
+        e instancia a classe orquestradora indicada, executando seu método `main`.
+
+        Estágios cujo módulo não existe ou cuja classe orquestradora não é
+        encontrada são registrados como warning e ignorados (`continue`), sem
+        interromper a execução dos demais estágios.
         """
         
-        self.build_extractor_orchestrator().main(ctx=self.ctx)
-        
-        self.build_to_interim_orchestrator().main(ctx=self.ctx)
-        
-        to_processed = self.build_to_processed_orchestrator()
-        if to_processed is not None:
-            to_processed.main(ctx=self.ctx)
-        
-        loader = self.build_loader_orchestrator()
-        if loader is not None:
-            loader.main(ctx=self.ctx)
-        
-        comparator = self.build_comparator_orchestrator()
-        if comparator is not None:
-            comparator.main(ctx=self.ctx)
+        self.ctx.configure_logging(pipeline=self.pipeline, process=self.process)
+        self.logger = self.ctx.logger
 
-        retention = self.build_retention_policy_orchestrator()
-        if retention is not None:
-            retention.main(ctx=self.ctx)
-        
+        for stage_path, orchestrator_class_name in self._build_stages().items():
+            
+            module_name = f"pipelines.scripts.pipelines.{self.pipeline}.stage.{stage_path}"
+
+            try:
+                
+                module = importlib.import_module(module_name)
+                
+            except ModuleNotFoundError:
+                
+                self.logger.exception(f"Módulo do orquestrador não encontrado: {module_name}")
+                
+                continue
+
+            try:
+                
+                orchestrator_cls = getattr(module, orchestrator_class_name)
+                
+            except AttributeError:
+                
+                self.logger.exception(
+                    f"Classe do orquestrador '{orchestrator_class_name}' não encontrada em {module_name}"
+                )
+                
+                continue
+
+            orchestrator = orchestrator_cls(pipeline=self.pipeline)
+            orchestrator.main(ctx=self.ctx)
+            
         
 # def main(env: str = "dev", run_id: str | None = None):
 #     """Entrypoint padrão para execução (local e container)."""
