@@ -21,7 +21,7 @@
     "timer_unit": "kairos-trap-cvm-cad.timer"
   },
   "cvm_formulario_de_referencia": {
-    "schedule": "19:00:00",
+    "schedule": "09:30:00",
     "frequency": "daily",
     "timer_unit": "kairos-trap-cvm-fre.timer"
   },

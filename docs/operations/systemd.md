@@ -7,7 +7,8 @@ Guia operacional dos timers e services dos pipelines agendados.
 | CVM ITR | `kairos-trap-cvm-itr.timer` | Diaria, 08:30 |
 | CVM DFP | `kairos-trap-cvm-dfp.timer` | Diaria, 08:00 |
 | CVM CAD | `kairos-trap-cvm-cad.timer` | Diaria, 09:10 |
-| CVM FRE | `kairos-trap-cvm-fre.timer` | Diaria, 19:00 |
+| CVM FRE | `kairos-trap-cvm-fre.timer` | Diaria, 09:30 |
+| CVM FORM POR CIA | `kairos-trap-cvm-form-por-cia.timer` | Diaria, 09:15 |
 | B3 CAD | — | Manual |
 | B3 indices | — | Manual |
 

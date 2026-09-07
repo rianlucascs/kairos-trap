@@ -8,7 +8,7 @@ Extrair e organizar os dados do Formulario de Referencia da CVM.
 
 - Status: `active`
 - Comando: `.venv/bin/python pipelines/scripts/pipelines/cvm_formulario_de_referencia/stage/pipeline.py`
-- Agendamento: diario, 19:00, via `kairos-trap-cvm-fre.timer`.
+- Agendamento: diario, 09:30, via `kairos-trap-cvm-fre.timer`.
 
 ## Stages
 

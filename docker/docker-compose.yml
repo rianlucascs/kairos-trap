@@ -49,6 +49,14 @@ services:
       - PIPELINE_NAME=cvm_formulario_de_referencia
       - PIPELINE_ENV=prod
 
+  cvm-form-por-cia-pipeline:
+    <<: *pipeline-common
+    container_name: cvm-form-por-cia-pipeline
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PIPELINE_NAME=cvm_formulario_por_cia
+      - PIPELINE_ENV=prod
+
   b3-cad-pipeline:
     <<: *pipeline-common
     container_name: b3-cad-pipeline
