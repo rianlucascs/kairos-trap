@@ -15,7 +15,7 @@
 
 ### Visão geral
 
-O kairos-trap coleta, transforma e organiza dados públicos do mercado financeiro brasileiro, principalmente de CVM e B3, por meio de pipelines de ETL independentes. O projeto fornece infraestrutura compartilhada para extração, transformação, validação, checkpoints, retenção e armazenamento dos dados, além de componentes para análise exploratória, pesquisa financeira e aplicações Streamlit. Cada pipeline possui regras próprias de origem, formato e processamento, mas segue convenções comuns de execução e organização.
+O kairos-trap coleta, transforma e organiza do mercado financeiro brasileiro, principalmente de CVM e B3, por meio de pipelines de ETL independentes. O projeto fornece infraestrutura compartilhada para extração, transformação, validação, checkpoints, retenção e armazenamento dos dados, além de componentes para análise exploratória, pesquisa financeira e aplicações Streamlit. Cada pipeline possui regras próprias de origem, formato e processamento, mas segue convenções comuns de execução e organização.
 
 ---
 
