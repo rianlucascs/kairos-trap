@@ -20,4 +20,5 @@ class ReaderSnapshotParquet(ReaderSnapshotParquetCVMInterface):
             pipeline="cvm_formulario_informacoes_trimestrais",
             prefix="itr",
             demonstration_code=demonstration_code,
+            subdir_stage="to_processed"
         )

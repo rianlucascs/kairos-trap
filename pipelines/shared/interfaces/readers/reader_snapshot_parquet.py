@@ -68,7 +68,8 @@ class ReaderSnapshotParquetInterface(ABC):
             return self._find_latest_snapshot()
         
         # current_snapshot_path() returns a path relative to data_dir; resolve it to absolute here.
-        return self.ctx.data_dir / self.ctx.current_snapshot_path(self.pipeline)
+        # return self.ctx.data_dir / self.ctx.current_snapshot_path(self.pipeline)
+        return self.ctx.current_snapshot_path(self.pipeline)
 
 
     def _build_parquet_path(self) -> Path:

@@ -42,6 +42,11 @@ class AssetService:
         return MANUAL_TRADING_CODES + b3_assets
     
     
+    def get_companies(self):
+        
+        return self.asset_repository.get_companies()
+    
+    
     def get_details(self, trading_code: str) -> AssetDetailsDTO | None:
         
         codes = self.asset_repository.get_codes()

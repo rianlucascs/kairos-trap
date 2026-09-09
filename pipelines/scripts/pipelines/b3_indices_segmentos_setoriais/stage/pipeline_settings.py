@@ -14,6 +14,7 @@ url: str = f"https://sistemaswebb3-listados.b3.com.br/indexProxy/indexCall/GetPo
 
 b3_indices_segmentos_setoriais: list[str] = [
     "IDIV", "MLCX", "SMLL", "IVBX", "AGFS", "IFNC", "IBEP", "IBEE", "IBHB", "IFIX",
-    "IBLV", "IMOB", "UTIL", "ICON", "IEEX", "IFIL", "IMAT", "INDX", "IBSD", "BDRX",
+    "IBLV", "IMOB", "UTIL", "ICON", "IEEX", "IFIL", "IMAT", "INDX", "IBSD", "BDRX", # Setoriais
+    "IBOV", "IBBR", "IBXL", "IBXX",# Amplos
 ]
 
