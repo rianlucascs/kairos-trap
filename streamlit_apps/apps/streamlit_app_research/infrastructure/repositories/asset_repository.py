@@ -80,5 +80,5 @@ class AssetRepository:
             for row in data[["code", "codeCVM", "companyName"]].itertuples(index=False)
         ]
         
-    
+     
 
