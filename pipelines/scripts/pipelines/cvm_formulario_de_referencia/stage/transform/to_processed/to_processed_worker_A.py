@@ -27,12 +27,4 @@ class ToProcessedWorkerA(ToProcessedWorkerInterfaceA):
         """
             
         return None
-
-
-if __name__ == "__main__":
     
-    from pipelines.shared.context import PipelineContext
-    
-    ToProcessedWorkerA(
-        pipeline="cvm_formulario_de_referencia"
-    ).main(ctx=PipelineContext())

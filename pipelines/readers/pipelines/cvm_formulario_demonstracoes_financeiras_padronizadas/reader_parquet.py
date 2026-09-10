@@ -19,5 +19,6 @@ class ReaderSnapshotParquet(ReaderSnapshotParquetCVMInterface):
         super().__init__(
             pipeline="cvm_formulario_demonstracoes_financeiras_padronizadas",
             prefix="dfp",
+            subdir_stage="to_processed",
             demonstration_code=demonstration_code,
         )

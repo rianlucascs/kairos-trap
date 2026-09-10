@@ -79,5 +79,7 @@ class ReaderSnapshotParquet(ReaderSnapshotParquetInterface):
         super().__init__(
             pipeline="cvm_formulario_de_referencia",
             subdir_stage="to_processed",
-            file_identifiers=f"fre_cia_aberta_{file_identifiers}_2010-{date.today().year}.parquet"
+            file_identifiers=f"fre_cia_aberta_{file_identifiers}_2010-{date.today().year}.parquet",
+            use_latest_snapshot=True
         )
+        
