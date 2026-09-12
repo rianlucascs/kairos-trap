@@ -25,13 +25,11 @@ from streamlit_apps.apps.streamlit_app_research.presentation.components.charts i
     render_return_vs_volatility_chart
 )
 
-
 from streamlit_apps.apps.streamlit_app_research.presentation.components import (
     styled_tabs_widget,
     render_moving_average_select_widget,
     render_information_table_widget
 )
-
 
 import streamlit as st
 from pandas import DataFrame
@@ -134,8 +132,6 @@ with retornos:
 with detalhes:
     
     st.write(f"Detalhes do ativo {selected_asset.ticker}")
-    
-    
 
     col1, col2 = st.columns([1.2, 1])
     

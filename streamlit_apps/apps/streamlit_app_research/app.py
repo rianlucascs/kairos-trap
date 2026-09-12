@@ -13,7 +13,7 @@ st.set_page_config(
 pg = st.navigation(
     [
         st.Page("presentation/pages/asset_explorer.py", title="Asset Explorer"),
-        st.Page("presentation/pages/market_overview.py", title="Market Overview"),
+        st.Page("presentation/pages/asset_screening.py", title="Asset Screening"),
     ]
 )
 

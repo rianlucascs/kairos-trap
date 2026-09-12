@@ -1,5 +1,3 @@
-
-
 import streamlit as st
 
 
@@ -10,6 +8,9 @@ _TABS_CSS = """
 <style>
 div[data-testid="stTabs"] [role="tablist"] {
     gap: 8px;
+    flex-wrap: wrap !important;
+    overflow-x: visible !important;
+    row-gap: 8px;
 }
 
 div[data-testid="stTab"] {

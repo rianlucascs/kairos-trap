@@ -1,0 +1,181 @@
+
+
+from streamlit_apps.apps.streamlit_app_research.infrastructure.repositories.cvm_formulario_informacoes_trimestrais_repository import CVMFormularioInformacoesTrimestraisRepository as itr
+from streamlit_apps.apps.streamlit_app_research.infrastructure.repositories.yfinance_price_provider_repository import YFinancePriceProviderRepository as YFProvider
+from streamlit_apps.apps.streamlit_app_research.infrastructure.repositories.b3_indices_segmentos_setoriais_repository import B3IndicesSegmentosSetoriaisRepository as b3_indices
+from streamlit_apps.apps.streamlit_app_research.infrastructure.repositories.b3_enriquecimento_cadastral_ativos_repository import B3EnriquecimentoCadastralAtivosRepository as b3_enriquecimento
+
+from pandas import DataFrame, to_datetime
+import streamlit as st
+from datetime import timedelta
+
+
+class AssetScreening10yPrice10yITRService:
+    """
+    Filtra os ativos elegíveis com base no histórico de 10 anos de preço e ITR,
+    e ordena os resultados pelo volume financeiro médio em ordem decrescente (ascending=False).
+    """
+    
+
+
+    MIN_YEARS = 10
+
+
+    def _get_ibov_composition(self) -> DataFrame:
+        
+        b3_index_df = b3_indices(file_identifiers="composicao.parquet").read().copy()
+        
+        return b3_index_df[b3_index_df["index"] == "IBOV"].reset_index(drop=True)
+
+
+    def _get_price_stats(self, ibov_df: DataFrame) -> DataFrame:
+        
+        price_stats = {}
+
+        for row in ibov_df.itertuples():
+            price_df = YFProvider().get_asset_price(
+                tickers=row.cod + ".SA", period="max", interval="1d"
+            ).copy()
+
+            price_stats[row.cod] = {
+                "date_start_price": price_df.index.min(),
+                "date_end_price": price_df.index.max(),
+                "ma_volume_financeiro": price_df["Volume"].mean(),
+            }
+
+        return (
+            DataFrame.from_dict(price_stats, orient="index")
+            .rename_axis("cod")
+            .reset_index()
+        )
+
+
+    def _get_cvm_codes(self) -> DataFrame:
+        
+        cvm_codes_df = b3_enriquecimento(file_identifiers="codigos.parquet").read()
+        cvm_codes_df.rename(columns={"code": "cod"}, inplace=True)
+        
+        return cvm_codes_df
+
+
+    def _get_itr_stats(self, assets_df: DataFrame) -> DataFrame:
+        
+        itr_stats = {}
+
+        for row in assets_df.itertuples():
+            itr_df = itr("BPP_con").query_parquet(
+                filters={"CD_CVM": str(row.codeCVM).zfill(6)}
+            )
+
+            itr_stats[row.codeCVM] = {
+                "date_start_itr": itr_df["DT_REFER"].min(),
+                "date_end_itr": itr_df["DT_REFER"].max(),
+            }
+
+        return (
+            DataFrame.from_dict(itr_stats, orient="index")
+            .rename_axis("codeCVM")
+            .reset_index()
+        )
+
+
+    def _add_years_diff_columns(self, df: DataFrame) -> DataFrame:
+        
+        diff_dias_preco = (
+            to_datetime(df["date_end_price"], format="%Y-%m-%d") - df["date_start_price"]
+        )
+        
+        df["anos_diferenca_preco"] = diff_dias_preco.dt.days / 365.25
+
+        diff_dias_itr = (
+            to_datetime(df["date_end_itr"], format="%Y-%m-%d") - df["date_start_itr"]
+        )
+        
+        df["anos_diferenca_itr"] = diff_dias_itr.dt.days / 365.25
+
+        return df
+
+
+    def _filter_and_sort_eligible_assets(self, df: DataFrame) -> DataFrame:
+        
+        columns = [
+            "cod",
+            "asset",
+            "codeCVM",
+            "anos_diferenca_preco",
+            "anos_diferenca_itr",
+            "ma_volume_financeiro",
+        ]
+
+        return (
+            df[
+                (df["anos_diferenca_itr"] >= self.MIN_YEARS)
+                & (df["anos_diferenca_preco"] >= self.MIN_YEARS)
+            ]
+            .sort_values(by="ma_volume_financeiro", ascending=False)[columns]
+            .reset_index(drop=True)
+        )
+
+
+    def _process(self) -> DataFrame:
+        
+        ibov_df = self._get_ibov_composition()
+
+        price_stats_df = self._get_price_stats(ibov_df)
+        assets_with_price_stats_df = ibov_df.merge(price_stats_df, on="cod", how="left")
+
+        cvm_codes_df = self._get_cvm_codes()
+        assets_with_cvm_codes_df = assets_with_price_stats_df.merge(
+            cvm_codes_df, on="cod", how="left"
+        )
+
+        itr_stats_df = self._get_itr_stats(assets_with_cvm_codes_df)
+        eligible_assets_df = assets_with_cvm_codes_df.merge(
+            itr_stats_df, on="codeCVM", how="left"
+        )
+
+        eligible_assets_df = self._add_years_diff_columns(eligible_assets_df)
+
+        return self._filter_and_sort_eligible_assets(eligible_assets_df)
+
+
+    def get_eligible_assets(self) -> DataFrame:
+        
+        return _get_eligible_assets_cached(self)
+
+
+from datetime import datetime, timedelta
+from pathlib import Path
+
+CACHE_TTL = timedelta(days=1)
+_CACHE_TIMESTAMP_PATH = Path(".streamlit_cache_meta/eligible_assets_last_run.txt")
+
+
+def _cache_is_stale() -> bool:
+    
+    if not _CACHE_TIMESTAMP_PATH.exists():
+        return True
+
+    last_run = datetime.fromisoformat(_CACHE_TIMESTAMP_PATH.read_text())
+    return datetime.now() - last_run > CACHE_TTL
+
+
+def _mark_cache_fresh() -> None:
+    
+    _CACHE_TIMESTAMP_PATH.parent.mkdir(parents=True, exist_ok=True)
+    _CACHE_TIMESTAMP_PATH.write_text(datetime.now().isoformat())
+
+
+@st.cache_data(persist="disk", show_spinner="Filtrando ativos elegíveis...")
+def _get_eligible_assets_cached(_service: "AssetScreening10yPrice10yITRService") -> DataFrame:
+    
+    return _service._process()
+
+
+def get_eligible_assets(service: "AssetScreening10yPrice10yITRService") -> DataFrame:
+    
+    if _cache_is_stale():
+        _get_eligible_assets_cached.clear()
+        _mark_cache_fresh()
+
+    return _get_eligible_assets_cached(_service=service)
