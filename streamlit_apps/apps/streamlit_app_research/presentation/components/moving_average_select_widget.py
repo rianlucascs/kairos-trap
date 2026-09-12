@@ -3,7 +3,7 @@
 import streamlit as st
 
 
-def render_moving_average_select_widget(key, options: list = [None, 5, 10, 20, 50, 100, 200]):
+def render_moving_average_select_widget(key, options: list = [None, 20, 10, 5, 50, 100, 200]):
     
     return st.selectbox(
         "Média móvel",

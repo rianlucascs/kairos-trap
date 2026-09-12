@@ -1,5 +1,5 @@
 
-from streamlit_apps.apps.streamlit_app_research.infrastructure.repositories.asset_demonstration_repository import AssetDemonstrationRepository
+from streamlit_apps.apps.streamlit_app_research.infrastructure.repositories.cvm_formulario_por_cia_repository import CVMFormularioPorCiaRepository
 from pipelines.domain.cvm_formulario_por_cia.demonstrations import AccountNotFoundError
 
 from pandas import DataFrame
@@ -23,7 +23,7 @@ class AssetDemonstrationService:
         cd_conta: str = "1",
     ) -> DataFrame:
 
-        asset_demonstration_repository = AssetDemonstrationRepository(
+        asset_demonstration_repository = CVMFormularioPorCiaRepository(
             cd_cvm=cd_cvm,
             demonstration_code=demonstration_code,
             prefix=prefix,
@@ -31,7 +31,7 @@ class AssetDemonstrationService:
 
         return (
             asset_demonstration_repository
-            .get_demonstration(ordem_exerc=ordem_exerc, cd_conta=cd_conta)
+            .get_formulario_por_cia(ordem_exerc=ordem_exerc, cd_conta=cd_conta)
             .df
             .reset_index(drop=True)
         )
@@ -51,7 +51,7 @@ class AssetDemonstrationService:
         ordem_exerc: str = "ÚLTIMO",
     ) -> DataFrame:
 
-        asset_demonstration_repository = AssetDemonstrationRepository(
+        asset_demonstration_repository = CVMFormularioPorCiaRepository(
             cd_cvm=cd_cvm,
             demonstration_code=demonstration_code,
             prefix=prefix,
@@ -59,7 +59,7 @@ class AssetDemonstrationService:
 
         return (
             asset_demonstration_repository
-            .get_demonstration_by_description(
+            .get_formulario_por_cia_by_description(
                 ds_conta_contains=ds_conta_contains,
                 cd_conta_prefix=cd_conta_prefix,
                 ordem_exerc=ordem_exerc,

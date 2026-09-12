@@ -26,14 +26,17 @@ class YFinancePriceProvider:
     def _validate(self, df: DataFrame) -> None:
         
         if df.empty:
+            
             raise YFinancePriceProviderError(
                 "DataFrame baixado está vazio."
             )
 
         if df.iloc[-1].isna().any():
-            raise YFinancePriceProviderError(
-                "DataFrame contém valores NaN na última linha."
-            )
+            
+            print("DataFrame contém valores NaN na última linha.")
+            
+        return df
+            
 
 
     def get_asset_price(self, **kwargs) -> DataFrame:

@@ -1,6 +1,6 @@
 
 
-from streamlit_apps.apps.streamlit_app_research.infrastructure.repositories.asset_price_repository import AssetPriceRepository
+from streamlit_apps.apps.streamlit_app_research.infrastructure.repositories import YFinancePriceProviderRepository
 
 from pandas import DataFrame
 import streamlit as st
@@ -13,7 +13,7 @@ class AssetPriceService:
         self
     ) -> None:
         
-        self.asset_price_repository = AssetPriceRepository()
+        self.asset_price_repository = YFinancePriceProviderRepository()
 
 
     @st.cache_data(ttl=60*5, show_spinner="Loading price data...")
