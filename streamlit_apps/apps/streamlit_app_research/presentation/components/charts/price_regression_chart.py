@@ -6,7 +6,7 @@ import streamlit as st
 import plotly.graph_objects as go        
 
 
-def render_asset_price_regression_chart(
+def render_price_regression_chart(
     analysis: PriceRegressionAnalysis,
 ) -> None:
 
@@ -66,7 +66,7 @@ def render_asset_price_regression_chart(
     st.plotly_chart(fig, width="stretch")
     
 
-def render_asset_price_regression_distribution_chart(
+def render_price_regression_distribution_chart(
     analysis: PriceRegressionAnalysis,
 ) -> None:
 

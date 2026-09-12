@@ -15,9 +15,9 @@ class ChartSeries:
     name: str
 
 
-def render_asset_balance_sheet_chart(
+def render_series_chart(
     series: list[ChartSeries],
-    title: str,
+    title: str | None = None,
     xlabel: str | None = None,
     ylabel: str | None = None,
     chart_type: Literal["line", "bar"] = "line",
@@ -51,11 +51,11 @@ def render_asset_balance_sheet_chart(
             text=title,
             x=0,
             xanchor="left",
-        ),
+        ) if title else None,
         xaxis_title=xlabel,
         yaxis_title=ylabel,
         hovermode="x unified",
-        margin=dict(l=0, r=0, t=40, b=0),
+        margin=dict(l=0, r=0, t=40 if title else 20, b=0),
     )
 
     st.plotly_chart(

@@ -39,7 +39,7 @@ div[data-testid="stTab"] .react-aria-SelectionIndicator {
 """
 
 
-def styled_tabs(labels: list[str]) -> list:
+def styled_tabs_widget(labels: list[str]) -> list:
     """Cria st.tabs com o estilo pill (Excel-dark) já aplicado.
 
     Uso:

@@ -7,7 +7,7 @@ from plotly.subplots import make_subplots
 
 
 
-def render_asset_price_line_chart(price: DataFrame) -> None:
+def render_price_line_chart(price: DataFrame) -> None:
     
     
     fig = make_subplots(

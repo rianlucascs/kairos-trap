@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 
-def render_asset_return_vs_volatility_chart(
+def render_return_vs_volatility_chart(
     analysis: ReturnVolatilityAnalysis,
 ) -> None:
 

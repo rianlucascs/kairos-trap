@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 from pandas import DataFrame
 
 
-def render_asset_returns_distribution_bar_chart(
+def render_returns_distribution_bar_chart(
     daily_returns: DataFrame,
     moving_average: int | None = None,
 ) -> None:
