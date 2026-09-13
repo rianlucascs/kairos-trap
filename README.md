@@ -98,16 +98,8 @@ pip install -e .
 
 ### 3. Executar um pipeline manualmente
 
-Cada pipeline é dividido em stages, e cada stage possui seu próprio `pipeline.py`. Para executar um stage isoladamente:
-
 ```bash
-python pipelines/<nome_do_pipeline>/stage/pipeline.py
-```
-
-Exemplo:
-
-```bash
-python pipelines/cvm_formulario_informacoes_trimestrais/extract/pipeline.py
+python pipelines/scripts/pipelines/<nome_do_pipeline>/stage/pipeline.py
 ```
 
 ### 4. Agendar execuções no servidor
