@@ -1,4 +1,5 @@
 
+
 from streamlit_apps.apps.streamlit_app_research.infrastructure.repositories.cvm_formulario_por_cia_repository import CVMFormularioPorCiaRepository
 from pipelines.domain.cvm_formulario_por_cia.demonstrations import AccountNotFoundError
 

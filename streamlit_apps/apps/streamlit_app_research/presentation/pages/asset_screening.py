@@ -26,7 +26,7 @@ screenings: list[ScreeningDTO] = [
         description=AssetScreening10yPrice10yITRService.__doc__,
         data=get_eligible_assets(service=AssetScreening10yPrice10yITRService()),
         python="""
-        from streamlit_apps.apps.streamlit_app_research.application.services.asset_screening import (AssetScreening10yPrice10yITRService, get_eligible_assets)
+        from streamlit_apps.apps.streamlit_app_research.application.services.asset_screening import AssetScreening10yPrice10yITRService, get_eligible_assets
         df: DataFrame = get_eligible_assets(service=AssetScreening10yPrice10yITRService())
         """,
     ),
@@ -36,7 +36,6 @@ screenings: list[ScreeningDTO] = [
         data=None,
         python=None,
     ),
-
 ]
 
 st.title("Asset Screening")
@@ -61,8 +60,9 @@ for tab, screening_dto in zip(tabs, screenings):
             st.dataframe(screening_dto.data)
             
             st.markdown("Código Python utilizado:")
-            st.code(screening_dto.python, language="python")
+            st.code(screening_dto.python, language="python", line_numbers=True, wrap_lines=True)
             
         else:
             
             st.info("Screening ainda não disponível.")
+            

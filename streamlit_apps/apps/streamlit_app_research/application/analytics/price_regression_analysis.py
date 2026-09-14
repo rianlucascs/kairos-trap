@@ -13,6 +13,7 @@ class PriceRegressionAnalysis:
         price: DataFrame,
         moving_average: int | None = None,
     ) -> None:
+        
         data = price[["Date", "Adj Close"]].dropna().copy()
 
         if moving_average:

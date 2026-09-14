@@ -1,4 +1,5 @@
 
+
 from pipelines.readers.pipelines.cvm_formulario_de_referencia.reader_parquet import ReaderSnapshotParquet as fre
 from streamlit_apps.apps.streamlit_app_research.application.services.asset_registry_service import AssetRegistryService
 

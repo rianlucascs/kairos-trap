@@ -6,11 +6,13 @@ import numpy as np
 
 class ReturnVolatilityAnalysis:
 
+
     def __init__(
         self,
         price: DataFrame,
         window: int = 21,
     ) -> None:
+        
         returns = (
             price["Adj Close"]
             .pct_change(fill_method=None)
@@ -41,6 +43,7 @@ class ReturnVolatilityAnalysis:
 
 
     def _calculate_r2(self) -> float:
+        
         x = self.data["volatility"]
         y = self.data["mean_return"]
 
@@ -54,6 +57,7 @@ class ReturnVolatilityAnalysis:
 
 
     def _calculate_ellipse(self):
+        
         x = self.data["volatility"]
         y = self.data["mean_return"]
 

@@ -1,2 +1,3 @@
 from streamlit_apps.apps.streamlit_app_research.application.analytics.price_regression_analysis import PriceRegressionAnalysis
 from streamlit_apps.apps.streamlit_app_research.application.analytics.return_volatility_analysis import ReturnVolatilityAnalysis
+from streamlit_apps.apps.streamlit_app_research.application.analytics.moving_average_regression_analysis import MovingAverageDistanceAnalysis

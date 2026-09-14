@@ -12,7 +12,8 @@ from streamlit_apps.apps.streamlit_app_research.application.services import (
 
 from streamlit_apps.apps.streamlit_app_research.application.analytics import (
     PriceRegressionAnalysis,
-    ReturnVolatilityAnalysis
+    ReturnVolatilityAnalysis,
+    MovingAverageDistanceAnalysis
 )
 
 from streamlit_apps.apps.streamlit_app_research.presentation.components.charts import (
@@ -77,13 +78,22 @@ with preco:
         st.error(f"Erro ao obter o preço do ativo: {e}")
         st.stop()
     
-    regressao_de_preco, indicator2, indicator3 = styled_tabs_widget([
-        "Regressão de Preço", "Indicador 2", "Indicador 3"
+    regressao_preco, regressao_media, indicator3 = styled_tabs_widget([
+        "Regressão Preço", "Distância Média", "Indicador 3"
     ])
     
-    with regressao_de_preco:
+    with regressao_preco:
         
         analysis = PriceRegressionAnalysis(price, moving_average=render_moving_average_select_widget("PriceRegressionAnalysis"))
+        
+        render_price_regression_chart(analysis)
+        render_price_regression_distribution_chart(analysis)
+    
+    
+    with regressao_media:
+        
+        analysis = MovingAverageDistanceAnalysis(price, moving_average=render_moving_average_select_widget(
+            "MovingAverageDistanceAnalysis", options=[20, 10, 5, 50, 100, 200]))
         
         render_price_regression_chart(analysis)
         render_price_regression_distribution_chart(analysis)
@@ -242,4 +252,5 @@ with demonstrativos_resultados:
         st.dataframe(lucro_liquido.tail(3))
 
     except Exception as e:
+        
         st.error(e.args[0])
