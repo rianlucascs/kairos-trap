@@ -19,7 +19,7 @@ from datetime import date
 url: str = "https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/ITR/DADOS/"
 
 
-file_prefix: str = "dfp_cia_aberta"
+file_prefix: str = "itr_cia_aberta"
 
 
 start_year: int = 2011
@@ -30,7 +30,7 @@ build_archives_zip: list[str] = [f'{file_prefix}_{year_now}.zip' for year_now in
 
 
 # Lista de códigos de demonstrações financeiras padronizadas (CVM) a serem processadas.
-demonstration_codes: list[str] = [
+file_identifiers: list[str] = [
     'BPA_con', 'BPA_ind', 
     'BPP_con', 'BPP_ind', 
     'DFC_MD_con', 'DFC_MD_ind', 
