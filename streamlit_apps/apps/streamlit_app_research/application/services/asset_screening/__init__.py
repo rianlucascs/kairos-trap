@@ -1,1 +1,5 @@
-from streamlit_apps.apps.streamlit_app_research.application.services.asset_screening.asset_screening_10yPrice_10yITR import AssetScreening10yPrice10yITRService, get_eligible_assets
+from streamlit_apps.apps.streamlit_app_research.application.services.asset_screening.asset_screening_10yPrice_10yITR import (
+    AssetScreening10yPrice10yITRService, get_eligible_assets_10yPrice10yITR)
+from streamlit_apps.apps.streamlit_app_research.application.services.asset_screening.asset_screening_unsupervised_learning_1 import (
+	AssetScreeningUnsupervisedLearning_1, get_eligible_assets_unsupervised_learning_1,
+)

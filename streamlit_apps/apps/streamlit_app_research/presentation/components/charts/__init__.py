@@ -9,3 +9,4 @@ from streamlit_apps.apps.streamlit_app_research.presentation.components.charts.s
 )
 from streamlit_apps.apps.streamlit_app_research.presentation.components.charts.returns_distribution_bar_chart import render_returns_distribution_bar_chart
 from streamlit_apps.apps.streamlit_app_research.presentation.components.charts.return_vs_volatility import render_return_vs_volatility_chart
+from streamlit_apps.apps.streamlit_app_research.presentation.components.charts.unsupervised_learning_1_chart import render_unsupervised_learning_1_chart

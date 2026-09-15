@@ -4,10 +4,8 @@ from streamlit_apps.apps.streamlit_app_research.infrastructure.repositories.cvm_
 from streamlit_apps.apps.streamlit_app_research.infrastructure.repositories.yfinance_price_provider_repository import YFinancePriceProviderRepository as YFProvider
 from streamlit_apps.apps.streamlit_app_research.infrastructure.repositories.b3_indices_segmentos_setoriais_repository import B3IndicesSegmentosSetoriaisRepository as b3_indices
 from streamlit_apps.apps.streamlit_app_research.infrastructure.repositories.b3_enriquecimento_cadastral_ativos_repository import B3EnriquecimentoCadastralAtivosRepository as b3_enriquecimento
-from streamlit_apps.apps.streamlit_app_research.application.services.asset_demonstration_service import AssetDemonstrationService
 
 from pandas import DataFrame, to_datetime
-import streamlit as st
 from datetime import timedelta
 
 
@@ -17,7 +15,6 @@ class AssetScreening10yPrice10yITRService:
     e ordena os resultados pelo volume financeiro médio em ordem decrescente (ascending=False).
     """
     
-
 
     MIN_YEARS = 10
 
@@ -78,35 +75,6 @@ class AssetScreening10yPrice10yITRService:
             .rename_axis("codeCVM")
             .reset_index()
         )
-        
-    
-    def _get_lucro_liquido_stats(self, assets_df: DataFrame) -> DataFrame:
-
-        asset_demonstration_service = AssetDemonstrationService()
-    
-        lucro_liquido_stats = {}
-    
-        for row in assets_df.itertuples():
-            
-            try:
-
-                lucro_liquido: DataFrame = asset_demonstration_service.get_lucro_liquido(cd_cvm=row.codeCVM)
-                
-                lucro_liquido_stats[row.codeCVM] = {
-                    "media_lucro_liquido": lucro_liquido["VL_CONTA_TRI"].mean()
-                }
-                
-            except Exception as e:
-
-                lucro_liquido_stats[row.codeCVM] = {"media_lucro_liquido": None}
-                
-                continue
-
-        return (
-            DataFrame.from_dict(lucro_liquido_stats, orient="index")
-            .rename_axis("codeCVM")
-            .reset_index()
-        )
 
 
     def _add_years_diff_columns(self, df: DataFrame) -> DataFrame:
@@ -135,7 +103,6 @@ class AssetScreening10yPrice10yITRService:
             "anos_diferenca_preco",
             "anos_diferenca_itr",
             "ma_volume_financeiro",
-            "media_lucro_liquido",
         ]
 
         return (
@@ -164,21 +131,16 @@ class AssetScreening10yPrice10yITRService:
         assets_with_itr_stats_df = assets_with_cvm_codes_df.merge(
             itr_stats_df, on="codeCVM", how="left"
         )
-        
-        lucro_liquido_stats_df = self._get_lucro_liquido_stats(assets_with_itr_stats_df)
-        eligible_assets_df = assets_with_itr_stats_df.merge(
-            lucro_liquido_stats_df, on="codeCVM", how="left"
-        )
 
-        eligible_assets_df = self._add_years_diff_columns(eligible_assets_df)
+        eligible_assets_df = self._add_years_diff_columns(assets_with_itr_stats_df)
 
         return self._filter_and_sort_eligible_assets(eligible_assets_df)
 
 
-from streamlit_apps.apps.streamlit_app_research.application.disk_cache_data_frame import DiskCachedDataFrame
+from streamlit_apps.apps.streamlit_app_research.application.ttl_disk_cache import TTLDiskCache
 
 
-_eligible_assets_cache = DiskCachedDataFrame(
+_eligible_assets_cache = TTLDiskCache(
     name="asset_screening_10yPrice_10yITR",
     ttl=timedelta(days=1),
     show_spinner="Filtrando ativos elegíveis...",
@@ -190,5 +152,5 @@ def _get_eligible_assets_cached(_service: "AssetScreening10yPrice10yITRService")
     return _service._process()
 
 
-def get_eligible_assets(service: "AssetScreening10yPrice10yITRService") -> DataFrame:
+def get_eligible_assets_10yPrice10yITR(service: "AssetScreening10yPrice10yITRService") -> DataFrame:
     return _eligible_assets_cache.get(_service=service)

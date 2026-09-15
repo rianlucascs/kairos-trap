@@ -10,7 +10,7 @@ import streamlit as st
 from pandas import DataFrame
 
 
-class DiskCachedDataFrame:
+class TTLDiskCache:
     """Adiciona expiração por tempo (TTL) ao cache em disco do Streamlit.
 
       sozinho não expira sozinho entre execuções:
@@ -20,7 +20,7 @@ class DiskCachedDataFrame:
     estourou, o cache é limpo (.clear()) e recriado antes de retornar.
 
     Uso:
-        cache = DiskCachedDataFrame(name="eligible_assets", ttl=timedelta(days=1))
+        cache = TTLDiskCache(name="eligible_assets", ttl=timedelta(days=1))
 
         @cache.wrap
         def _load(_service) -> DataFrame:
