@@ -7,6 +7,7 @@ Guia operacional de Docker para os pipelines.
 ```bash
 docker build -f docker/Dockerfile.pipelines -t financial_pipelines .
 docker compose -f docker/docker-compose.yml build
+docker compose -f docker/docker-compose.yml build --no-cache --pull
 ```
 
 A configuracao comum do Compose monta `pipelines/data`, `pipelines/logs`, `pipelines/checkpoints` e `pipelines/historical_data`. O limite e `7g` de memoria, com reserva de `4g`.
