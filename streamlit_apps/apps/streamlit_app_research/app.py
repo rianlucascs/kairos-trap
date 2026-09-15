@@ -14,6 +14,7 @@ pg = st.navigation(
     [
         st.Page("presentation/pages/asset_explorer.py", title="Asset Explorer"),
         st.Page("presentation/pages/asset_screening.py", title="Asset Screening"),
+        st.Page("presentation/pages/asset_monitoring.py", title="Asset Monitoring")
     ]
 )
 
