@@ -3,14 +3,34 @@
 import streamlit as st
 import plotly.graph_objects as go
 from pandas import DataFrame
+import numpy as np
+
+
+def _optimal_nbins(returns) -> int:
+    n = len(returns)
+    if n < 2:
+        return 1
+
+    q75, q25 = np.percentile(returns, [75, 25])
+    iqr = q75 - q25
+
+    if iqr == 0:
+        return 30  # fallback quando a distribuição é muito concentrada
+
+    bin_width = 2 * iqr * (n ** (-1 / 3))
+    data_range = returns.max() - returns.min()
+
+    return max(1, int(np.ceil(data_range / bin_width)))
 
 
 def render_returns_distribution_bar_chart(
-    daily_returns: DataFrame,
+    data: DataFrame,
     moving_average: int | None = None,
+    _xaxis_title: str = "Retorno Diário",
+    _yaxis_title: str = "Frequência",
 ) -> None:
     
-    returns = daily_returns["daily_returns"].dropna()
+    returns = data[[c for c in data.columns if "returns" in c][0]].dropna()
 
     if moving_average:
         returns = returns.rolling(moving_average).mean().dropna()
@@ -29,7 +49,7 @@ def render_returns_distribution_bar_chart(
     fig = go.Figure(
         go.Histogram(
             x=returns,
-            nbinsx=60,
+            nbinsx=_optimal_nbins(returns),
         )
     )
 
@@ -89,8 +109,8 @@ def render_returns_distribution_bar_chart(
     )
 
     fig.update_layout(
-        xaxis_title="Retorno Diário",
-        yaxis_title="Frequência",
+        xaxis_title=_xaxis_title,
+        yaxis_title=_yaxis_title,
         xaxis=dict(tickformat=".1%"),
         bargap=0.05,
         showlegend=False,

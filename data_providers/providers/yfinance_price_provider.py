@@ -57,19 +57,12 @@ class YFinancePriceProvider:
         return self._normalize(df)
     
 
-    def get_assets_prices(
-        self,
-        assets: list[str],
-        period: str = "10y",
-        interval: str = "1d",
-    ) -> dict[str, DataFrame]:
+    def get_assets_prices_dict(self, **kwargs) -> dict[str, DataFrame]:
         """
         Obtém os preços históricos de múltiplos ativos usando o Yahoo Finance.
 
         Args:
-            assets (list[str]): Lista de códigos dos ativos.
-            period (str): Período de tempo para os dados históricos (padrão: "10y").
-            interval (str): Intervalo de tempo dos dados (padrão: "1d").
+            **kwargs: Argumentos que serão passados para a função `yfinance.download`.
 
         Returns:
             dict[str, DataFrame]: Dicionário onde as chaves são os códigos dos ativos e os valores são os DataFrames com os preços históricos.
@@ -77,12 +70,13 @@ class YFinancePriceProvider:
         
         prices_by_code = {}
 
-        for asset in assets:
+        for asset in kwargs.get("tickers", []):
             df = self.get_asset_price(
                 tickers=asset,
-                period=period,
-                interval=interval,
+                period=kwargs.get("period", "1y"),
+                interval=kwargs.get("interval", "1d"),
             )
+            
 
             if not df.empty:
                 prices_by_code[asset] = df
@@ -96,13 +90,17 @@ class YFinancePriceProvider:
         
         return prices_by_code
 
-
+    
+    @staticmethod
     def to_monthly(df: DataFrame) -> DataFrame:
         """
         Transforma uma série temporal diária em uma série mensal, usando o último registro disponível de cada mês.
         
         Garantindo que o último mês seja incluído mesmo que ainda não tenha terminado.
         """
+
+        if "Date" in df.columns:
+            df = df.set_index("Date")
 
         df_month = df.resample("ME").last()
 

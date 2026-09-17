@@ -86,3 +86,5 @@ ystemctl list-timers --all | grep financial-research-
 *.tmp
 
 .streamlit_cache_meta/
+
+backtesting/

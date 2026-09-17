@@ -13,7 +13,8 @@ from streamlit_apps.apps.streamlit_app_research.application.services import (
 from streamlit_apps.apps.streamlit_app_research.application.analytics import (
     PriceRegressionAnalysis,
     ReturnVolatilityAnalysis,
-    MovingAverageDistanceAnalysis
+    MovingAverageDistanceAnalysis,
+    MonthlyCumulativeReturnAnalysis
 )
 
 from streamlit_apps.apps.streamlit_app_research.presentation.components.charts import (
@@ -29,7 +30,8 @@ from streamlit_apps.apps.streamlit_app_research.presentation.components.charts i
 from streamlit_apps.apps.streamlit_app_research.presentation.components import (
     styled_tabs_widget,
     render_moving_average_select_widget,
-    render_information_table_widget
+    render_information_table_widget,
+    render_asset_monitor_table_widget
 )
 
 import streamlit as st
@@ -82,12 +84,19 @@ with preco:
         "Regressão Preço", "Distância Média", "Indicador 3"
     ])
     
+    
+    # --- Price Regression Section ---
+    
+    
     with regressao_preco:
         
         analysis = PriceRegressionAnalysis(price, moving_average=render_moving_average_select_widget("PriceRegressionAnalysis"))
         
         render_price_regression_chart(analysis)
         render_price_regression_distribution_chart(analysis)
+    
+    
+    # --- Moving Average Distance Section ---
     
     
     with regressao_media:
@@ -110,8 +119,7 @@ with retornos:
         
         daily_returns: DataFrame = asset_price_service.get_asset_returns(tickers=selected_asset.ticker, period="10y")
         
-        render_series_chart(
-            series=[ChartSeries(df=daily_returns, x="Date", y="daily_returns", name="Daily Return")], ylabel="Return")
+        render_series_chart(series=[ChartSeries(df=daily_returns, x="Date", y="daily_returns", name="Daily Return")], ylabel="Return")
         
         st.dataframe(daily_returns[["Date", "daily_returns"]].tail(3))
         
@@ -119,12 +127,33 @@ with retornos:
         
         st.error(f"Erro ao obter os retornos do ativo: {e}")
         
-    distribuicao, retorno_vs_volatilidade, indicador3 = styled_tabs_widget([
-        "Distribuição", "Retorno vs Volatilidade", "Indicador 3"])
+    distribuicao, retorno_vs_volatilidade, retorno_acumulado_mensal = styled_tabs_widget([
+        "Distribuição", "Retorno vs Volatilidade", "Retorno Acumulado Mensal"])
+    
+    
+    # --- Distribution Section ---
+    
     
     with distribuicao:
-
-        render_returns_distribution_bar_chart(daily_returns)
+        
+        render_returns_distribution_bar_chart(
+            data=daily_returns, 
+            moving_average=render_moving_average_select_widget("DistributionSectionDailyReturns", options=[None, 20, 10, 5, 50, 100, 200]), 
+            _xaxis_title="Retorno Diário", _yaxis_title="Frequência")
+        
+        monthly_returns: DataFrame = asset_price_service.asset_price_repository.to_monthly(df=price)[["Adj Close"]].pct_change(1).rename(
+            columns={"Adj Close": "monthly_returns"})
+        
+        st.write("---")
+        
+        render_returns_distribution_bar_chart(
+            data=monthly_returns, 
+            moving_average=render_moving_average_select_widget("DistributionSectionMonthlyReturns", options=[None, 3, 6, 9, 12]), 
+            _xaxis_title="Retorno Mensal", _yaxis_title="Frequência")
+    
+    
+    # --- Return vs Volatility Section ---
+    
 
     with retorno_vs_volatilidade:
         
@@ -135,6 +164,38 @@ with retornos:
         
         render_return_vs_volatility_chart(analysis)
     
+    
+    # --- Monthly Cumulative Return Section ---
+    
+    
+    with retorno_acumulado_mensal:
+        
+        analysis = MonthlyCumulativeReturnAnalysis(
+            adj_close=asset_price_service.asset_price_repository.to_monthly(df=price)["Adj Close"], window=render_moving_average_select_widget(
+                key="MonthlyCumulativeReturnAnalysis", options=[12*10, 12, 24])
+            )
+        
+        cols_monthly = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+        
+        render_asset_monitor_table_widget(
+            data=analysis.result,
+            percent_columns=[*cols_monthly, "Anual"],
+            color_columns= {
+                m: {"cmap": "RdYlGn", "vmin": -0.15, "vmax": 0.15} for m in cols_monthly
+                } | {
+                "Anual": {"cmap": "RdYlGn", "vmin": -0.50, "vmax": 0.50}
+                }
+            )
+        
+        st.write("Média Mensal dos Retornos Acumulados")
+        render_asset_monitor_table_widget(
+            data=analysis.result.drop(columns=["Ano"]).mean().to_frame().T,
+            percent_columns=[*cols_monthly, "Anual"],
+            color_columns= {
+                m: {"cmap": "RdYlGn", "vmin": -0.05, "vmax": 0.05} for m in cols_monthly
+                }
+            )
+        
 
 # --- Details Section ---
 
