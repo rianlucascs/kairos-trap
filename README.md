@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="banner.png" width="743" height="293">
+  <img src="assets/banner.png" width="743" height="293">
 </p>
 
 # **kairos-trap**
@@ -12,14 +12,26 @@
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=flat&logo=streamlit&logoColor=white)
 ![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=flat&logo=ubuntu&logoColor=white)
 
+## Índice
 
-### Visão geral
-
-O kairos-trap coleta, transforma e organiza do mercado financeiro brasileiro, principalmente de CVM e B3, por meio de pipelines de ETL independentes. O projeto fornece infraestrutura compartilhada para extração, transformação, validação, checkpoints, retenção e armazenamento dos dados, além de componentes para análise exploratória, pesquisa financeira e aplicações Streamlit. Cada pipeline possui regras próprias de origem, formato e processamento, mas segue convenções comuns de execução e organização.
+- [Visão geral](#visão-geral)
+- [Pipelines](#pipelines)
+- [Data Providers](#data-providers)
+- [Research](#research)
+- [Como utilizar](#como-utilizar)
+- [Infraestrutura](#infraestrutura)
+- [Requisitos](#requisitos)
+- [Licença](#licença)
 
 ---
 
-# **Pipelines**
+## Visão geral
+
+O projeto coleta, transforma e organiza dados do mercado financeiro brasileiro, principalmente de CVM e B3, por meio de pipelines de ETL independentes. Ele fornece infraestrutura compartilhada para extração, transformação, validação, checkpoints, retenção e armazenamento dos dados, além de componentes para análise exploratória, pesquisa financeira e aplicações Streamlit. Cada pipeline possui regras próprias de origem, formato e processamento, mas segue convenções comuns de execução e organização.
+
+---
+
+## Pipelines
 
 A camada de pipelines é responsável pela aquisição, preparação e persistência dos dados.
 
@@ -47,13 +59,23 @@ A camada de pipelines é responsável pela aquisição, preparação e persistê
 | `cvm_formulario_cadastral` — *dev*                      | [CVM](https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/FCA/DADOS/)                                   | Extração e processamento dos dados do formulário FCA.                                            |
 | `cvm_valores_mobiliarios_ofertados` — *dev*             | [CVM](https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/VLMO/DADOS/)                                  | Extração e processamento dos dados de valores mobiliários ofertados.                             |
 | `google_noticias_mercado` — *dev*                       | [Google](https://news.google.com/)                                                                | Extração e processamento de notícias relacionadas ao mercado financeiro.                         |
-| `b3_enriquecimento_cadastral_ativos` | [B3](https://www.b3.com.br/)                                                                                         | Extração e processamento de informações complementares para enriquecimento cadastral e identificação de ativos financeiros. |
+| `b3_enriquecimento_cadastral_ativos`                    | [B3](https://www.b3.com.br/)                                                                       | Extração e processamento de informações complementares para enriquecimento cadastral e identificação de ativos financeiros. |
 | `b3_indices_segmentos_setoriais`                        | [B3](https://www.b3.com.br/pt_br/market-data-e-indices/indices/indices-de-segmentos-e-setoriais/) | Extração e processamento da composição dos índices de segmentos e setoriais.                     |
-| `social_monitoramento_agentes_de_mercado` — dev         | [Redes sociais]()                                                                                 | Monitoramento e processamento de publicações de agentes de mercado em redes sociais.
+| `social_monitoramento_agentes_de_mercado` — *dev*       | Redes sociais                                                                                      | Monitoramento e processamento de publicações de agentes de mercado em redes sociais.             |
 
 ---
 
-# **Research**
+## Data Providers
+
+A camada de Data Providers é responsável pela integração com bibliotecas e APIs externas de dados de mercado, encapsulando requisições, tratamento, validação e normalização das respostas antes de disponibilizá-las ao restante do projeto.
+
+| Componente                   | Descrição                                                                                         |
+| ---------------------------- | ------------------------------------------------------------------------------------------------- |
+| `yfinance_price_provider.py` | Integração com o yfinance para obtenção, validação, tratamento e normalização de dados de preços. |
+
+---
+
+## Research
 
 A camada de Research é responsável pelo consumo e utilização dos dados produzidos pelos pipelines.
 
@@ -64,28 +86,26 @@ A camada de Research é responsável pelo consumo e utilização dos dados produ
 
 ### Apps disponíveis
 
-| App | Descrição | Preview |
-|---|---|---|
-| `streamlit_app_pipelines` | Monitoramento operacional dos pipelines ETL, incluindo:<br>• Consulta de pipelines disponíveis<br>• Logs de execução<br>• Checkpoints organizados por pipeline, stage e step | [preview](docs/streamlit_apps/preview/streamlit_app_pipelines/page_overview.pdf) |
-| `streamlit_app_research` | Aplicação analítica para pesquisa de mercado, incluindo:<br>• Monitoramento geral e setorial<br>• Acompanhamento de preços, retornos e balanço<br>• Avaliação de estratégias de investimento<br>• Análise de conjuntos de ativos<br>• Consulta de notícias por ativo<br>• Configuração de alertas | [preview](docs/streamlit_apps/preview/streamlit_app_research/) |
+**`streamlit_app_pipelines`** — Monitoramento operacional dos pipelines ETL ([preview](docs/streamlit_apps/preview/streamlit_app_pipelines/page_overview.pdf))
+- Consulta de pipelines disponíveis
+- Logs de execução
+- Checkpoints organizados por pipeline, stage e step
+
+**`streamlit_app_research`** — Aplicação analítica para pesquisa de mercado ([preview](docs/streamlit_apps/preview/streamlit_app_research/))
+- Monitoramento geral e setorial
+- Acompanhamento de preços, retornos e balanço
+- Avaliação de estratégias de investimento
+- Análise de conjuntos de ativos
+- Consulta de notícias por ativo
+- Configuração de alertas
 
 ---
 
-# **Data Providers**
-
-A camada de **Data Providers** é responsável pela integração com ``bibliotecas`` e APIs externas de dados de mercado, encapsulando requisições, tratamento, validação e normalização das respostas antes de disponibilizá-las ao restante do projeto.
-
-| Componente                   | Descrição                                                                                         |
-| ---------------------------- | ------------------------------------------------------------------------------------------------- |
-| `yfinance_price_provider.py` | Integração com o yfinance para obtenção, validação, tratamento e normalização de dados de preços. |
-
----
-
-# **Como utilizar**
+## Como utilizar
 
 ### 1. Clonar o projeto
 
-```python
+```bash
 git clone https://github.com/rianlucascs/kairos-trap
 cd kairos-trap
 ```
@@ -108,11 +128,11 @@ Para rodar os pipelines automaticamente via `systemd timers`, siga o passo a pas
 
 ### 5. Consumir os dados
 
-Utilize os apps em `streamlit_apps` para monitorar pipelines e explorar os dados processados, ou acesse diretamente via `research`.
+Utilize os apps em `streamlit_apps` para monitorar pipelines e explorar os dados processados.
 
 ---
 
-# **Topologia**
+## Infraestrutura
 
 | Componente | Detalhe |
 |---|---|
@@ -121,3 +141,4 @@ Utilize os apps em `streamlit_apps` para monitorar pipelines e explorar os dados
 | Execução | Docker e Docker Compose |
 | Armazenamento compartilhado | Samba — `/srv/data` |
 | Agendamento | systemd timers |
+
