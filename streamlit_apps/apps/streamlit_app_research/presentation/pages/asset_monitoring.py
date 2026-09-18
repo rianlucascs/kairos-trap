@@ -21,15 +21,36 @@ import streamlit as st
 
 
 result: dict = get_eligible_assets_unsupervised_learning_1(service=AssetScreeningUnsupervisedLearning_1())
+asset_monitoring = AssetMonitoring(result=result)
+assets_by_cluster = asset_monitoring.get_assets_by_all_clusters()
 
-asset_monitoring = AssetMonitoring(result=result, cluster=3)
+
+# --- Helper Functions ---
+
+
+def format_cluster(c: int) -> str:
+    tickers = [t.removesuffix(".SA") for t in assets_by_cluster[c]]
+    preview = ", ".join(tickers[:6]) + ("…" if len(tickers) > 6 else "")
+    return f"Cluster {c} ({len(tickers)}) — {preview}"
 
 
 # --- Asset Monitoring ---
 
 
 st.title("Asset Monitoring")
-st.subheader("Ativos do Cluster 3 — Unsupervised Learning 1")
+
+cluster = st.selectbox("Cluster", list(assets_by_cluster), format_func=format_cluster)
+
+with st.expander("Ver todos os ativos por cluster"):
+    for c, tickers in assets_by_cluster.items():
+        names = ", ".join(t.removesuffix(".SA") for t in tickers)
+        st.markdown(f"**Cluster {c}** ({len(tickers)}): {names}")
+        
+stats = asset_monitoring.get_stats_by_ticker(cluster)
+
+st.subheader(f"Ativos do Cluster {cluster} — Unsupervised Learning 1")
+st.caption(f"{len(stats)} ativos")
+
 st.info(AssetScreeningUnsupervisedLearning_1.__doc__)
 
 
@@ -38,10 +59,14 @@ st.info(AssetScreeningUnsupervisedLearning_1.__doc__)
 
 distancias, rankings = styled_tabs_widget(["Distâncias", "Rankings"])
 
+
+# --- Asset Monitoring Distances  ---
+
+
 with distancias:
     
     render_asset_monitor_table_widget(
-        data=asset_monitoring.get_stats_by_ticker(),
+        data=stats,
         percent_columns=None,
         color_columns={
             "current_distance_media20%": {"cmap": "RdYlGn", "vmin": -10.00, "vmax": 10.00},
@@ -55,6 +80,9 @@ with distancias:
     )
     
 
+# --- Asset Monitoring Rankings Tabs ---
+
+
 with rankings:
     
     # research/research_studies/backtesting/...
@@ -64,15 +92,16 @@ with rankings:
         
         st.write(AssetMomentumRankingService.__doc__.replace("\n\n", "\n"))
         
-        ranking_key = "asset_monitoring::ranking_1"
-        load_ranking_key = "asset_monitoring::load_ranking_1"
+        # A chave inclui o cluster: cada cluster guarda o seu próprio ranking.
+        ranking_key = f"asset_monitoring::ranking_1::cluster_{cluster}"
+        load_ranking_key = f"asset_monitoring::load_ranking_1::cluster_{cluster}"
 
         if ranking_key not in st.session_state:
             if st.button("Carregar ranking", key=load_ranking_key):
                 try:
                     st.session_state[ranking_key] = get_current_momentum_ranking(
                         service=AssetMomentumRankingService(),
-                        tickers=asset_monitoring.get_assets_by_cluster(),
+                        tickers=asset_monitoring.get_assets_by_cluster(cluster),
                     )
                     st.rerun()
                 except Exception as error:
