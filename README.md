@@ -20,8 +20,6 @@
 - [Research](#research)
 - [Como utilizar](#como-utilizar)
 - [Infraestrutura](#infraestrutura)
-- [Requisitos](#requisitos)
-- [Licença](#licença)
 
 ---
 
@@ -128,7 +126,18 @@ Para rodar os pipelines automaticamente via `systemd timers`, siga o passo a pas
 
 ### 5. Consumir os dados
 
-Utilize os apps em `streamlit_apps` para monitorar pipelines e explorar os dados processados.
+Utilize os apps em `streamlit_apps` para monitorar pipelines e explorar os dados processados, ou os notebooks em `research` para análises exploratórias mais livres.
+
+### 6. Leitura isolada dos dados
+
+Cada pipeline possui um reader dedicado que retorna o snapshot mais recente em formato parquet, sem precisar executar o pipeline completo.
+
+```python
+from pipelines.readers.pipelines.<nome_do_pipeline>.reader_parquet import ReaderSnapshotParquet
+
+reader = ReaderSnapshotParquet(...)  # parâmetros variam conforme o pipeline
+df = reader.read()
+```
 
 ---
 
