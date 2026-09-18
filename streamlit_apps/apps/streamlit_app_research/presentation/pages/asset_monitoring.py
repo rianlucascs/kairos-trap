@@ -57,11 +57,10 @@ with distancias:
 
 with rankings:
     
-    # research/research_studies/backtesting/... rankings/... /1, /2, /3
+    # research/research_studies/backtesting/...
+    ranking1, ranking2, ranking3 = styled_tabs_widget(["Ranking 1", "Ranking 2", "Ranking 3"])
     
-    r1, r2, r3 = styled_tabs_widget(["Ranking 1", "Ranking 2", "Ranking 3"])
-    
-    with r1:
+    with ranking1:
         
         st.write(AssetMomentumRankingService.__doc__.replace("\n\n", "\n"))
         

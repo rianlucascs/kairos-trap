@@ -95,7 +95,13 @@ with preco:
         render_price_regression_chart(analysis)
         render_price_regression_distribution_chart(analysis)
     
-    
+        st.write(
+            f"O ativo está **{analysis.current_streak_days} dias** "
+            f"{'acima' if analysis.current_streak_direction == 'above' else 'abaixo'} da tendência "
+            f"(média histórica: {analysis.avg_days_above:.1f} dias acima / {analysis.avg_days_below:.1f} dias abaixo)."
+        )
+                
+                
     # --- Moving Average Distance Section ---
     
     
@@ -106,7 +112,13 @@ with preco:
         
         render_price_regression_chart(analysis)
         render_price_regression_distribution_chart(analysis)
-    
+        
+        st.write(
+            f"O ativo está **{analysis.current_streak_days} dias** "
+            f"{'acima' if analysis.current_streak_direction == 'above' else 'abaixo'} da média móvel "
+            f"(média histórica: {analysis.avg_days_above:.1f} dias acima / {analysis.avg_days_below:.1f} dias abaixo)."
+        )
+
 
 # --- Returns Section ---
 

@@ -126,7 +126,18 @@ Para rodar os pipelines automaticamente via `systemd timers`, siga o passo a pas
 
 ### 5. Consumir os dados
 
-Utilize os apps em `streamlit_apps` para monitorar pipelines e explorar os dados processados, ou os notebooks em `research` para análises exploratórias mais livres.
+Utilize os apps em `streamlit_apps` para monitorar pipelines e explorar os dados processados, ou os [`notebooks`](research/) em `research` para análises exploratórias mais livres.
+
+```bash
+# Execução local do dashboard Streamlit
+cd kairos-trap
+
+# research
+streamlit run streamlit_apps/apps/streamlit_app_research/app.py
+
+# pipelines
+streamlit run streamlit_apps/apps/streamlit_app_pipelines/app.py
+```
 
 ### 6. Leitura isolada dos dados
 
