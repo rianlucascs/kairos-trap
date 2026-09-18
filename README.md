@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/banner.png" width="743" height="293">
+  <img src="assets/banner.png" width="600" height="236">
 </p>
 
 # **kairos-trap**
