@@ -34,6 +34,8 @@ from streamlit_apps.apps.streamlit_app_research.presentation.components import (
     render_asset_monitor_table_widget
 )
 
+from application.services.asset_historical_data_step_compare_service import AssetHistoricalDataStepCompareService
+
 import streamlit as st
 from pandas import DataFrame
 
@@ -44,7 +46,18 @@ from pandas import DataFrame
 asset_registry_service: list[AssetRegistryDTO] = AssetRegistryService().add_company_names().add_cvm_cias_cad().to_dto_list()
 asset_price_service = AssetPriceService()
 asset_demonstration_service = AssetDemonstrationService()
+asset_historical_data_step_compare_service = AssetHistoricalDataStepCompareService()
 
+
+# --- Utility Functions ---
+
+
+def safe_call(func, default=None):
+    try:
+        return func()
+    except Exception:
+        return default
+    
 
 # --- Asset Explorer ---
 
@@ -218,32 +231,59 @@ with detalhes:
 
     col1, col2 = st.columns([1.2, 1])
     
+    
+    # --- Asset Information Section ---
+    
+    
     with col1:
         
         render_information_table_widget(
             data={
                 "Código de Negociação": selected_asset.ticker if selected_asset.ticker else "N/A",
                 "Código CVM": selected_asset.cd_cvm if selected_asset.cd_cvm else "N/A",
-                "Nome da Empresa": selected_asset.company_name if selected_asset.company_name else "N/A",
+                "Nome da Empresa": selected_asset.company_name[0] if selected_asset.company_name else "N/A",
                 "CNPJ": selected_asset.cnpj_cia if selected_asset.cnpj_cia else "N/A",
-                "Website": selected_asset.website if selected_asset.website else "N/A",
-                "Classificação da Indústria": selected_asset.industry_classification if selected_asset.industry_classification else "N/A",
-                "Atividade": selected_asset.activity if selected_asset.activity else "N/A"
+                "Website": selected_asset.website[0] if selected_asset.website else "N/A",
+                "Classificação da Indústria": selected_asset.industry_classification[0] if selected_asset.industry_classification else "N/A",
+                "Atividade": selected_asset.activity[0] if selected_asset.activity else "N/A"
             },
             title="Informações do Ativo"
         )
 
+    
+    # --- Demonstrations Section ---
+    
+    
     with col2:
         
         render_information_table_widget(
             data={
-                "Último Preço": "N/A",
-                "Último Balanço Processado": "N/A",
-                "Nro. Ações": "N/A"
+                "Último Atualização do (BPA_con)": safe_call(lambda: asset_demonstration_service.get_ativo(cd_cvm=selected_asset.cd_cvm)["DT_REFER"].iloc[-1].strftime("%d/%m/%Y"), default="N/A"),
+                "Último Atualização do (DRE_con)": safe_call(lambda: asset_demonstration_service.get_receita_liquida(cd_cvm=selected_asset.cd_cvm)["DT_REFER"].iloc[-1].strftime("%d/%m/%Y"), default="N/A"),
             },
-            title=""
+            title="Demonstrações"
         )
     
+    
+    # --- Changes in DRE_con ---
+    
+    
+    changed_data_dre_con = asset_historical_data_step_compare_service.get_cvm_formulario_informacoes_trimestrais_by_cd_cvm(
+        cd_cvm=selected_asset.cd_cvm, demonstration_code='DRE_con', filename='changed')
+    
+    if changed_data_dre_con is not None and not changed_data_dre_con.empty:
+        st.subheader(f"Linhas presentes nos dois snapshots, mas com valores diferentes. {selected_asset.ticker}")
+        st.dataframe(changed_data_dre_con)
+        
+    
+    removed_data_dre_con = asset_historical_data_step_compare_service.get_cvm_formulario_informacoes_trimestrais_by_cd_cvm(
+        cd_cvm=selected_asset.cd_cvm, demonstration_code='DRE_con', filename='removed')
+    
+    if removed_data_dre_con is not None and not removed_data_dre_con.empty:
+        st.subheader(f"Linhas presentes apenas no snapshot anterior. {selected_asset.ticker}")
+        st.dataframe(removed_data_dre_con)
+        
+        
     
 # --- Balance Sheet Section ---
 

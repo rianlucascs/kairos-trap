@@ -23,7 +23,7 @@ import streamlit as st
 result: dict = get_eligible_assets_unsupervised_learning_1(service=AssetScreeningUnsupervisedLearning_1())
 asset_monitoring = AssetMonitoring(result=result)
 assets_by_cluster = asset_monitoring.get_assets_by_all_clusters()
-
+ 
 
 # --- Helper Functions ---
 
@@ -58,9 +58,6 @@ st.info(AssetScreeningUnsupervisedLearning_1.__doc__)
 
 
 distancias, rankings = styled_tabs_widget(["Distâncias", "Rankings"])
-
-
-# --- Asset Monitoring Distances  ---
 
 
 with distancias:
