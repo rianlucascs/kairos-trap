@@ -206,8 +206,6 @@ df = reader.query_parquet(filters={"CD_CVM": 16330, "CD_CONTA": "3.01"})
 df[["CD_CVM", "DT_REFER", "DT_INI_EXERC", "DT_FIM_EXERC", "DS_CONTA", "VL_CONTA"]].tail(3)
 ```
 
-Para outros pipelines, troque `cvm_formulario_informacoes_trimestrais` pelo nome desejado; os parâmetros do reader variam conforme o pipeline.
-
 Resultado:
 
 | CD_CVM | DT_REFER | DT_INI_EXERC | DT_FIM_EXERC | DS_CONTA | VL_CONTA |
