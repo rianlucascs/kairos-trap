@@ -16,6 +16,7 @@
 
 - [Visão geral](#visão-geral)
 - [Pipelines](#pipelines)
+- [Agenda de execução](#agenda-de-execução)
 - [Data Providers](#data-providers)
 - [Research](#research)
 - [Como utilizar](#como-utilizar)
@@ -60,6 +61,27 @@ A camada de pipelines é responsável pela aquisição, preparação e persistê
 | `b3_enriquecimento_cadastral_ativos`                    | [B3](https://www.b3.com.br/)                                                                       | Extração e processamento de informações complementares para enriquecimento cadastral e identificação de ativos financeiros. |
 | `b3_indices_segmentos_setoriais`                        | [B3](https://www.b3.com.br/pt_br/market-data-e-indices/indices/indices-de-segmentos-e-setoriais/) | Extração e processamento da composição dos índices de segmentos e setoriais.                     |
 | `social_monitoramento_agentes_de_mercado` — *dev*       | Redes sociais                                                                                      | Monitoramento e processamento de publicações de agentes de mercado em redes sociais.             |
+
+### Agenda de execução
+
+| Pipeline | Frequência | Horário |
+|---|---|---|
+| `cvm_formulario_demonstracoes_financeiras_padronizadas` | Diária | 08:00 |
+| `cvm_formulario_informacoes_trimestrais` | Diária | 08:30 |
+| `cvm_cias_abertas_informacao_cadastral` | Diária | 09:10 |
+| `cvm_formulario_por_cia` | Diária | 09:15 |
+| `cvm_formulario_de_referencia` | Diária | 09:30 |
+| `b3_enriquecimento_cadastral_ativos` | Manual | Sob demanda |
+| `b3_indices_segmentos_setoriais` | Manual | Sob demanda |
+| `cvm_informacoes_periodicas_e_eventuais` — *dev* | Sem agendamento | — |
+| `cvm_formulario_cadastral` — *dev* | Sem agendamento | — |
+| `cvm_valores_mobiliarios_ofertados` — *dev* | Sem agendamento | — |
+| `google_noticias_mercado` — *dev* | Sem agendamento | — |
+| `social_monitoramento_agentes_de_mercado` — *dev* | Sem agendamento | — |
+
+> **Política de atualização e confiabilidade:** os dados são processados conforme a agenda acima, a partir das fontes oficiais indicadas na tabela de pipelines. A disponibilidade do dado mais recente depende da publicação pela fonte de origem e da conclusão bem-sucedida do pipeline. Execuções manuais podem ser realizadas sob demanda.
+
+Os detalhes de operação dos timers estão disponíveis em [docs/operations/systemd.md](docs/operations/systemd.md).
 
 ---
 
