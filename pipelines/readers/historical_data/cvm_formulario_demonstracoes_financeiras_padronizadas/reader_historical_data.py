@@ -33,3 +33,4 @@ class ReaderHistoricalDataCVMDFP(ReaderHistoricalDataInterface):
             filename=f"dfp_cia_aberta_{demonstration_code}_2011-{date.today().year}_{comparation}.parquet",
             snapshot=snapshot
         )
+ 

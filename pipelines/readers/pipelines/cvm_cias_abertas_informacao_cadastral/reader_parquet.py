@@ -16,3 +16,4 @@ class ReaderSnapshotParquet(ReaderSnapshotParquetInterface):
             file_identifiers="cad_cia_aberta.parquet",
             use_latest_snapshot=use_latest_snapshot
         )
+        
