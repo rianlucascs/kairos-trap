@@ -126,18 +126,10 @@ A camada de Research é responsável pelo consumo e utilização dos dados produ
 
 ### Apps disponíveis
 
-**`streamlit_app_pipelines`** — Monitoramento operacional dos pipelines ETL ([preview](docs/streamlit_apps/preview/streamlit_app_pipelines/page_overview.pdf))
-- Consulta de pipelines disponíveis
-- Logs de execução
-- Checkpoints organizados por pipeline, stage e step
-
-**`streamlit_app_research`** — Aplicação analítica para pesquisa de mercado ([preview](docs/streamlit_apps/preview/streamlit_app_research/))
-- Monitoramento geral e setorial
-- Acompanhamento de preços, retornos e balanço
-- Avaliação de estratégias de investimento
-- Análise de conjuntos de ativos
-- Consulta de notícias por ativo
-- Configuração de alertas
+| App | Descrição | Funcionalidades | Preview |
+|---|---|---|---|
+| `streamlit_app_pipelines` | Monitoramento operacional dos pipelines ETL | • Consulta de pipelines disponíveis<br>• Logs de execução<br>• Checkpoints organizados por pipeline, stage e step | [preview](docs/streamlit_apps/preview/streamlit_app_pipelines/page_overview.pdf) |
+| `streamlit_app_research` | Aplicação analítica para pesquisa de mercado | • Monitoramento geral e setorial<br>• Acompanhamento de preços, retornos e balanço<br>• Avaliação de estratégias de investimento<br>• Análise de conjuntos de ativos<br>• Consulta de notícias por ativo<br>• Configuração de alertas | [preview](docs/streamlit_apps/preview/streamlit_app_research/) |
 
 ---
 
