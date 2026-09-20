@@ -126,10 +126,12 @@ A camada de Research é responsável pelo consumo e utilização dos dados produ
 
 ### Apps disponíveis
 
-| App | Descrição | Funcionalidades | Preview |
-|---|---|---------------------------------------------------------------------|---|
-| `streamlit_app_pipelines` | Monitoramento operacional dos pipelines ETL | • Consulta de pipelines disponíveis<br>• Logs de execução<br>• Checkpoints organizados por pipeline, stage e step | [preview](docs/streamlit_apps/preview/streamlit_app_pipelines/page_overview.pdf) |
-| `streamlit_app_research` | Aplicação analítica para pesquisa de mercado | • Monitoramento geral e setorial<br>• Acompanhamento de preços, retornos e balanço<br>• Avaliação de estratégias de investimento<br>• Análise de conjuntos de ativos<br>• Consulta de notícias por ativo<br>• Configuração de alertas | [preview](docs/streamlit_apps/preview/streamlit_app_research/) |
+### Apps disponíveis
+
+| App | Descrição | Funcionalidades |
+|---|---|---|
+| [`streamlit_app_pipelines`](docs/streamlit_apps/preview/streamlit_app_pipelines/page_overview.pdf) | Monitoramento operacional dos pipelines ETL | •&nbsp;Consulta&nbsp;de&nbsp;pipelines&nbsp;disponíveis<br>•&nbsp;Logs&nbsp;de&nbsp;execução<br>•&nbsp;Checkpoints&nbsp;organizados&nbsp;por&nbsp;pipeline,&nbsp;stage&nbsp;e&nbsp;step |
+| [`streamlit_app_research`](docs/streamlit_apps/preview/streamlit_app_research/) | Aplicação analítica para pesquisa de mercado | •&nbsp;Monitoramento&nbsp;geral&nbsp;e&nbsp;setorial<br>•&nbsp;Acompanhamento&nbsp;de&nbsp;preços,&nbsp;retornos&nbsp;e&nbsp;balanço<br>•&nbsp;Avaliação&nbsp;de&nbsp;estratégias&nbsp;de&nbsp;investimento<br>•&nbsp;Análise&nbsp;de&nbsp;conjuntos&nbsp;de&nbsp;ativos<br>•&nbsp;Consulta&nbsp;de&nbsp;notícias&nbsp;por&nbsp;ativo<br>•&nbsp;Configuração&nbsp;de&nbsp;alertas |
 
 ---
 
