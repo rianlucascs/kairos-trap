@@ -42,3 +42,9 @@ docker ps
 docker stats
 docker compose -f docker/docker-compose.yml images
 ```
+
+## Remove cache de build não utilizado
+
+```bash
+docker builder prune -a
+```

@@ -17,6 +17,7 @@
 - [Visão geral](#visão-geral)
 - [Pipelines](#pipelines)
 - [Agenda de execução](#agenda-de-execução)
+- [Uso de armazenamento](#uso-de-armazenamento)
 - [Data Providers](#data-providers)
 - [Research](#research)
 - [Como utilizar](#como-utilizar)
@@ -82,6 +83,27 @@ A camada de pipelines é responsável pela aquisição, preparação e persistê
 > **Política de atualização e confiabilidade:** os dados são processados conforme a agenda acima, a partir das fontes oficiais indicadas na tabela de pipelines. A disponibilidade do dado mais recente depende da publicação pela fonte de origem e da conclusão bem-sucedida do pipeline. Execuções manuais podem ser realizadas sob demanda.
 
 Os detalhes de operação dos timers estão disponíveis em [docs/operations/systemd.md](docs/operations/systemd.md).
+
+### Uso de armazenamento
+
+| Pipeline | Volume dos dados processados |
+|---|---:|
+| `cvm_formulario_informacoes_trimestrais` | 23 GB |
+| `cvm_formulario_demonstracoes_financeiras_padronizadas` | 7,9 GB |
+| `cvm_formulario_de_referencia` | 3,1 GB |
+| `cvm_formulario_por_cia` | 740 MB |
+| `cvm_cias_abertas_informacao_cadastral` | 4,2 MB |
+| `b3_enriquecimento_cadastral_ativos` | 1,5 MB |
+| `b3_indices_segmentos_setoriais` | 624 KB |
+| `cvm_informacoes_periodicas_e_eventuais` — *dev* | Não implementado |
+| `cvm_formulario_cadastral` — *dev* | Não implementado |
+| `cvm_valores_mobiliarios_ofertados` — *dev* | Não implementado |
+| `google_noticias_mercado` — *dev* | Não implementado |
+| `social_monitoramento_agentes_de_mercado` — *dev* | Não implementado |
+
+| `social_monitoramento_agentes_de_mercado` — *dev* | Não implementado |
+
+> **Nota:** os volumes representam exclusivamente o espaço em disco ocupado pelos dados processados em `pipelines/data`. Não incluem logs, checkpoints, dados históricos, imagens ou cache do Docker. Última medição: 20/09/2026.
 
 ---
 
