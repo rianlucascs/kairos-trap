@@ -80,6 +80,7 @@ A camada de pipelines é responsável pela aquisição, preparação e persistê
 | `google_noticias_mercado` — *dev* | Sem agendamento | — |
 | `social_monitoramento_agentes_de_mercado` — *dev* | Sem agendamento | — |
 
+
 > **Política de atualização e confiabilidade:** os dados são processados conforme a agenda acima, a partir das fontes oficiais indicadas na tabela de pipelines. A disponibilidade do dado mais recente depende da publicação pela fonte de origem e da conclusão bem-sucedida do pipeline. Execuções manuais podem ser realizadas sob demanda.
 
 Os detalhes de operação dos timers estão disponíveis em [docs/operations/systemd.md](docs/operations/systemd.md).
