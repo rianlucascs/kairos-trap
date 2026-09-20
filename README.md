@@ -101,8 +101,6 @@ Os detalhes de operação dos timers estão disponíveis em [docs/operations/sys
 | `google_noticias_mercado` — *dev* | Não implementado |
 | `social_monitoramento_agentes_de_mercado` — *dev* | Não implementado |
 
-| `social_monitoramento_agentes_de_mercado` — *dev* | Não implementado |
-
 > **Nota:** os volumes representam exclusivamente o espaço em disco ocupado pelos dados processados em `pipelines/data`. Não incluem logs, checkpoints, dados históricos, imagens ou cache do Docker. Última medição: 20/09/2026.
 
 ---
