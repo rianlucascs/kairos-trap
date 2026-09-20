@@ -1,10 +1,14 @@
 <p align="center">
-  <img src="assets/banner.png" width="600" height="236">
+  <img src="assets/banner.png" alt="Banner do kairos-trap" width="600" height="236">
 </p>
 
-# **kairos-trap**
+# kairos-trap
 
-![Python](https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white)
+**Dados do mercado financeiro brasileiro, coletados, validados e versionados por snapshots, prontos para consumo em Python.**
+
+> **Status:** em desenvolvimento ativo. Parte dos pipelines está em produção (agendados) e parte ainda em desenvolvimento (marcados como *dev*).
+
+![Python 3.10](https://img.shields.io/badge/Python-3.10-3776AB?style=flat&logo=python&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat&logo=docker&logoColor=white)
 ![DuckDB](https://img.shields.io/badge/DuckDB-FFF000?style=flat&logo=duckdb&logoColor=black)
 ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=flat&logo=sqlite&logoColor=white)
@@ -22,12 +26,15 @@
 - [Research](#research)
 - [Como utilizar](#como-utilizar)
 - [Infraestrutura](#infraestrutura)
+- [Licença](#licença)
 
 ---
 
 ## Visão geral
 
-O projeto coleta, transforma e organiza dados do mercado financeiro brasileiro, principalmente de CVM e B3, por meio de pipelines de ETL independentes. Ele fornece infraestrutura compartilhada para extração, transformação, validação, checkpoints, retenção e armazenamento dos dados, além de componentes para análise exploratória, pesquisa financeira e aplicações Streamlit. Cada pipeline possui regras próprias de origem, formato e processamento, mas segue convenções comuns de execução e organização.
+O `kairos-trap` transforma fontes públicas do mercado financeiro brasileiro, como CVM e B3, em uma base histórica estruturada e reproduzível. Cada fonte é tratada por um pipeline ETL independente, com regras próprias de origem, formato e processamento, mas todos seguem convenções comuns e compartilham a infraestrutura de extração, validação, checkpoints, retenção e armazenamento.
+
+A separação entre dados brutos, intermediários e processados, com snapshots e readers dedicados, permite rastrear a origem dos dados, reprocessar etapas específicas e consumi-los de forma consistente em pesquisas financeiras e aplicações Streamlit.
 
 ---
 
@@ -80,7 +87,7 @@ A camada de pipelines é responsável pela aquisição, preparação e persistê
 | `google_noticias_mercado` — *dev* | Sem agendamento | — |
 | `social_monitoramento_agentes_de_mercado` — *dev* | Sem agendamento | — |
 
-> **Política de atualização e confiabilidade:** os dados são processados conforme a agenda acima, a partir das fontes oficiais indicadas na tabela de pipelines. A disponibilidade do dado mais recente depende da publicação pela fonte de origem e da conclusão bem-sucedida do pipeline. Execuções manuais podem ser realizadas sob demanda.
+> **Política de atualização e confiabilidade:** os dados são processados conforme a agenda acima, a partir das fontes oficiais indicadas na tabela de pipelines. Os horários seguem o fuso de Brasília (`America/Sao_Paulo`, UTC−03:00). A disponibilidade do dado mais recente depende da publicação pela fonte de origem e da conclusão bem-sucedida do pipeline. Execuções manuais podem ser realizadas sob demanda.
 
 Os detalhes de operação dos timers estão disponíveis em [docs/operations/systemd.md](docs/operations/systemd.md).
 
@@ -177,14 +184,39 @@ streamlit run streamlit_apps/apps/streamlit_app_pipelines/app.py
 
 ### 6. Leitura isolada dos dados
 
-Cada pipeline possui um reader dedicado que retorna o snapshot mais recente em formato parquet, sem precisar executar o pipeline completo.
+O repositório não inclui dados. Eles são gerados pelos pipelines e gravados em `pipelines/data` como snapshots. Depois que um snapshot existe, o reader dedicado o lê em formato parquet sem reexecutar o pipeline.
+
+> **Antes de ler, gere o snapshot.** Este exemplo usa o pipeline ITR, que é o maior do projeto (cerca de 23 GB processados, veja [Uso de armazenamento](#uso-de-armazenamento)), então a primeira execução leva tempo e ocupa disco. Para um teste leve, use `cvm_cias_abertas_informacao_cadastral` (cerca de 4,2 MB).
+
+**1. Gerar o snapshot (uma vez):**
+
+```bash
+python pipelines/scripts/pipelines/cvm_formulario_informacoes_trimestrais/stage/pipeline.py
+```
+
+**2. Ler o snapshot:**
 
 ```python
-from pipelines.readers.pipelines.<nome_do_pipeline>.reader_parquet import ReaderSnapshotParquet
+from pipelines.readers.pipelines.cvm_formulario_informacoes_trimestrais.reader_parquet import ReaderSnapshotParquet
 
-reader = ReaderSnapshotParquet(...)  # parâmetros variam conforme o pipeline
-df = reader.read()
+ # DRE consolidada, filtrando companhia (CD_CVM) e conta (3.01 = receita de venda)
+reader = ReaderSnapshotParquet(demonstration_code="DRE_con")
+df = reader.query_parquet(filters={"CD_CVM": 16330, "CD_CONTA": "3.01"})
+
+df[["CD_CVM", "DT_REFER", "DT_INI_EXERC", "DT_FIM_EXERC", "DS_CONTA", "VL_CONTA"]].tail(3)
 ```
+
+Para outros pipelines, troque `cvm_formulario_informacoes_trimestrais` pelo nome desejado; os parâmetros do reader variam conforme o pipeline.
+
+Resultado:
+
+| CD_CVM | DT_REFER | DT_INI_EXERC | DT_FIM_EXERC | DS_CONTA | VL_CONTA |
+|---|---|---|---|---|---|
+| 016330 | 2011-09-30 | 2010-07-01 | 2010-09-30 | Receita de Venda de Bens e/ou Serviços | 452306.0 |
+| 016330 | 2011-09-30 | 2011-01-01 | 2011-09-30 | Receita de Venda de Bens e/ou Serviços | 395294.0 |
+| 016330 | 2011-09-30 | 2011-07-01 | 2011-09-30 | Receita de Venda de Bens e/ou Serviços | 0.0 |
+
+> Para outros pipelines, troque `cvm_formulario_informacoes_trimestrais` pelo nome desejado; os parâmetros do reader variam conforme o pipeline.
 
 ---
 
@@ -197,4 +229,19 @@ df = reader.read()
 | Execução | Docker e Docker Compose |
 | Armazenamento compartilhado | Samba — `/srv/data` |
 | Agendamento | systemd timers |
+
+
+--- 
+
+## Aviso legal
+
+- **Não é recomendação de investimento.** Os dados, indicadores, alertas e análises produzidos por este projeto têm caráter informativo e de pesquisa. Decisões de investimento são de responsabilidade de quem as toma.
+- **Fontes de terceiros.** Os dados vêm de fontes externas (CVM, B3, yfinance, Google Notícias, entre outras). O uso deve respeitar os termos de cada fonte, e a disponibilidade e a precisão dos dados dependem delas.
+- **Sem garantias.** O software é fornecido "como está", conforme a licença do repositório.
+
+---
+
+## Licença
+
+O código é distribuído sob a licença [MIT](LICENSE). Ela não se aplica aos dados obtidos de fontes de terceiros, que seguem os termos de cada fonte.
 
