@@ -22,3 +22,4 @@ class ReaderSnapshotParquet(ReaderSnapshotParquetCVMInterface):
             demonstration_code=demonstration_code,
             subdir_stage="to_processed"
         )
+        

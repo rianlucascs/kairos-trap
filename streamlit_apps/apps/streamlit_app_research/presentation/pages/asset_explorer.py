@@ -283,7 +283,6 @@ with detalhes:
         st.subheader(f"Linhas presentes apenas no snapshot anterior. {selected_asset.ticker}")
         st.dataframe(removed_data_dre_con)
         
-        
     
 # --- Balance Sheet Section ---
 
